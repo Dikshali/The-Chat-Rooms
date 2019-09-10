@@ -47,11 +47,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
         checkInternetPermissionGranted();
         checkReadStoragePermissionGranted();
         checkWriteStoragePermissionGranted();
+        /*checkCoarseLocationPermissionGranted();
+        checkFineLocationPermissionGranted();*/
 
         findViewById(R.id.main_signUpTextView).setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, SignUpActivity.class);
@@ -171,6 +172,32 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 Log.v(TAG, "Permission is revoked");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, 1);
+            }
+        } else { //permission is automatically granted on sdk<23 upon installation
+            Log.v(TAG, "Permission is granted");
+        }
+    }
+
+    public void checkFineLocationPermissionGranted() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                Log.v(TAG, "Permission is granted");
+            } else {
+                Log.v(TAG, "Permission is revoked");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            }
+        } else { //permission is automatically granted on sdk<23 upon installation
+            Log.v(TAG, "Permission is granted");
+        }
+    }
+
+    public void checkCoarseLocationPermissionGranted() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                Log.v(TAG, "Permission is granted");
+            } else {
+                Log.v(TAG, "Permission is revoked");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
             }
         } else { //permission is automatically granted on sdk<23 upon installation
             Log.v(TAG, "Permission is granted");
