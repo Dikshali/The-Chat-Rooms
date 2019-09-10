@@ -114,7 +114,7 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
         sendButton.setOnClickListener(view1 -> {
             if (!editText.getText().toString().isEmpty()) {
                 String messageId = myRef.push().getKey();
-                String createdOn = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss").format(new Date());
+                String createdOn = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(new Date());
                 Messages messages = new Messages(messageId, editText.getText().toString(), user.getId(),
                         user.getFirstName() + " " + user.getLastName(), createdOn);
                 myRef.child(messageId).setValue(messages);
