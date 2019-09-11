@@ -204,6 +204,11 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         viewHolder.getInfoButton().setOnClickListener(view -> {
             messageInterface.viewPickUpOffers(messages.getMessageId());
         });
+        viewHolder.getDeleteButton().setOnClickListener(view -> {
+            deleteTrip(messages.getMessageId());
+            deleteMessage(messages.getMessageId());
+
+        });
     }
 
     private void configureMyTripProgressViewHolder(MyTripInProgressViewHolder viewHolder, int position) throws ParseException {
@@ -214,6 +219,10 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         viewHolder.getMyTripProgressTime().setText(pt.format(date));
         viewHolder.getInfoButton().setOnClickListener(view -> {
             messageInterface.viewDriversProgress(messages.getMessageId());
+        });
+        viewHolder.getDeleteButton().setOnClickListener(view -> {
+            deleteTrip(messages.getMessageId());
+            deleteMessage(messages.getMessageId());
         });
     }
 
@@ -301,9 +310,19 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             myRef.child(messages.getMessageId()).setValue(messages);
         });
         viewHolder.getDeleteButton().setOnClickListener(view -> {
-            myRef.child(messages.getMessageId()).removeValue();
+            deleteMessage(messages.getMessageId());
         });
     }
+
+    private void deleteTrip(String messageId){
+        tripRef = firebaseDatabase.getReference("chatRooms/trips/" );
+        tripRef.child(messageId).removeValue();
+    }
+    private void deleteMessage(String messageId){
+        myRef.child(messageId).removeValue();
+
+    }
+
 
     @Override
     public int getItemCount() {
