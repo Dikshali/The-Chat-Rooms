@@ -21,6 +21,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -64,6 +65,7 @@ import java.util.LinkedHashMap;
 public class MessageFragment extends Fragment implements MessageAdapter.MessageInterface {
 
     private static final String TAG = "MessageFragment";
+    static final int PICKUPOFFERS = 1, LIVELOCATION = 2;
     ArrayList<Messages> messagesArrayList = new ArrayList<>();
     private MessageAdapter messageAdapter;
     private User user;
@@ -215,7 +217,7 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
         intent.putExtra(Parameters.GROUP_ID, groupId);
         intent.putExtra(Parameters.MESSAGE_ID, messageId);
 
-        startActivity(intent);
+        startActivityForResult(intent, PICKUPOFFERS);
 //        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 //        fragmentTransaction.replace(R.id.nav_host_fragment, pickUpOffersFragment, "Chat Fragment");
 //        fragmentTransaction.addToBackStack(null);
@@ -267,6 +269,18 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICKUPOFFERS){
+            Toast.makeText(getContext(), "Driver Selected", Toast.LENGTH_LONG).show();
+        }
+        else if (requestCode == LIVELOCATION){
+            Toast.makeText(getContext(), "DRIVER WILL BE HERE SOON", Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    @Override
     public void viewDriversProgress(String messageId) {
         tripRef = firebaseDatabase.getReference("chatRooms/trips/" + messageId );
 
@@ -274,7 +288,7 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
 //        intent.putExtra(Parameters.GROUP_ID, groupId);
 //        intent.putExtra(Parameters.MESSAGE_ID, messageId);
 
-        startActivity(intent);
+        startActivityForResult(intent, LIVELOCATION);
 
         //tripRef.child(Parameters.START_POINT).child(Parameters.LATITUDE)
     }

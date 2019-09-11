@@ -190,5 +190,6 @@ public class PickUpOffersFragment extends FragmentActivity implements OnMapReady
         tripRef = firebaseDatabase.getReference("chatRooms/trips/"+messageId);
         tripRef.child(Parameters.DRIVERS).setValue(null);
         tripRef.child(Parameters.DRIVER_ACCEPTED).setValue(drivers);
+        finish();
     }
 }
