@@ -3,6 +3,7 @@ package com.app.thechatrooms.ui.trips;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -10,8 +11,10 @@ import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -47,46 +50,39 @@ import java.util.Date;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RequestTripFragment extends Fragment implements OnMapReadyCallback {
+public class RequestTripFragment extends FragmentActivity {
 
     String TAG = "RequestTrip";
+    static final int TRIPREQUEST=3;
     User user;
     String groupId;
     private DatabaseReference myRef, tripRef;
     private FirebaseDatabase firebaseDatabase;
     private GoogleMap mMap;
+    PlaceLatitueLongitude startPointLocation = new PlaceLatitueLongitude(), endPointLocation = new PlaceLatitueLongitude();
 
     public RequestTripFragment() {
         // Required empty public constructor
     }
 
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_request_trip, container, false);
-        Button request = view.findViewById(R.id.framgnet_request_trip_RequestButton);
-        groupId = getArguments().getString(Parameters.GROUP_ID);
-        user = (User) getArguments().getSerializable(Parameters.USER_ID);
-        PlaceLatitueLongitude startPointLocation = new PlaceLatitueLongitude(), endPointLocation = new PlaceLatitueLongitude();
-        Places.initialize(getContext(), "AIzaSyCjQlEN9SKDCtC30zy7grp-lyhPjEv792Q");
-        AutocompleteSupportFragment startPoint = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.fragment_request_trip_start_point);
-
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.fragment_request_trip);
+        Intent intent = getIntent();
+        Button request = findViewById(R.id.framgnet_request_trip_RequestButton);
+        Places.initialize(getApplicationContext(), "AIzaSyCjQlEN9SKDCtC30zy7grp-lyhPjEv792Q");
+        groupId = intent.getStringExtra(Parameters.GROUP_ID);
+        user = (User) intent.getSerializableExtra(Parameters.USER_ID);
+        AutocompleteSupportFragment startPoint = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_request_trip_start_point);
+        AutocompleteSupportFragment endPoint = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_request_trip_end_point);
         firebaseDatabase = FirebaseDatabase.getInstance();
-        myRef = firebaseDatabase.getReference("chatRooms/messages/" + groupId);
-
-        // Specify the types of place data to return.
-
+        myRef = firebaseDatabase.getReference("chatRooms/messages/"+groupId);
         startPoint.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
-
-        AutocompleteSupportFragment endPoint = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.fragment_request_trip_end_point);
         endPoint.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
-// Set up a PlaceSelectionListener to handle the response.
         startPoint.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
-            public void onPlaceSelected(Place place) {
-                // TODO: Get info about the selected place.
+            public void onPlaceSelected(@NonNull Place place) {
                 Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
                 LatLng latLng = place.getLatLng();
                 startPointLocation.setLatitude(latLng.latitude);
@@ -95,13 +91,14 @@ public class RequestTripFragment extends Fragment implements OnMapReadyCallback 
             }
 
             @Override
-            public void onError(Status status) {
-                // TODO: Handle the error.
+            public void onError(@NonNull Status status) {
                 Log.i(TAG, "An error occurred: " + status);
                 startPointLocation.setLatitude(null);
                 startPointLocation.setLongitude(null);
+
             }
         });
+
         endPoint.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
@@ -119,39 +116,31 @@ public class RequestTripFragment extends Fragment implements OnMapReadyCallback 
 
             }
         });
-
-        request.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (startPointLocation.isEmpty() || endPointLocation.isEmpty()) {
-                    Log.d("EMPTY", String.valueOf(startPointLocation.isEmpty()) + " --- " + String.valueOf(endPointLocation.isEmpty()));
-                    Toast.makeText(getContext(), "Please select start and end points", Toast.LENGTH_LONG).show();
+        request.setOnClickListener(view -> {
+            if (startPointLocation.isEmpty() || endPointLocation.isEmpty()) {
+                Log.d("EMPTY", String.valueOf(startPointLocation.isEmpty()) + " --- " + String.valueOf(endPointLocation.isEmpty()));
+                Toast.makeText(getApplicationContext(), "Please select start and end points", Toast.LENGTH_LONG).show();
 
 
-                } else {
-                    Toast.makeText(getContext(), "GOT START AND END POINTS", Toast.LENGTH_LONG).show();
-                    firebaseDatabase = FirebaseDatabase.getInstance();
-                    myRef = firebaseDatabase.getReference("chatRooms/messages/" + groupId);
-                    String messageId = myRef.push().getKey();
-                    String createdOn = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(new Date());
-                    Messages messages = new Messages(messageId, Parameters.TRIP_REQUEST, user.getId(),
-                            user.getFirstName() + " " + user.getLastName(), createdOn, Parameters.MESSAGE_TYPE_RIDE_REQUEST);
-                    myRef.child(messageId).setValue(messages);
-                    tripRef = firebaseDatabase.getReference("chatRooms/trips/" + messageId);
+            } else {
+                Toast.makeText(getApplicationContext(), "GOT START AND END POINTS", Toast.LENGTH_LONG).show();
+                firebaseDatabase = FirebaseDatabase.getInstance();
+                myRef = firebaseDatabase.getReference("chatRooms/messages/" + groupId);
+                String messageId = myRef.push().getKey();
+                String createdOn = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(new Date());
+                Messages messages = new Messages(messageId, Parameters.TRIP_REQUEST, user.getId(),
+                        user.getFirstName() + " " + user.getLastName(), createdOn, Parameters.MESSAGE_TYPE_RIDE_REQUEST);
+                myRef.child(messageId).setValue(messages);
+                tripRef = firebaseDatabase.getReference("chatRooms/trips/" + messageId);
 
-                    Trips trips = new Trips(Parameters.TRIP_STATUS_START, user.getId(), null, startPointLocation, endPointLocation, null);
-                    tripRef.setValue(trips);
-                }
+                Trips trips = new Trips(Parameters.TRIP_STATUS_START, user.getId(), null, startPointLocation, endPointLocation, null);
+                tripRef.setValue(trips);
+
+                super.onBackPressed();
             }
         });
 
 
-        return view;
-    }
-
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
 
     }
 }

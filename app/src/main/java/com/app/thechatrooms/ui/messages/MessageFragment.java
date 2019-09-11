@@ -65,7 +65,7 @@ import java.util.LinkedHashMap;
 public class MessageFragment extends Fragment implements MessageAdapter.MessageInterface {
 
     private static final String TAG = "MessageFragment";
-    static final int PICKUPOFFERS = 1, LIVELOCATION = 2;
+    static final int PICKUPOFFERS = 1, LIVELOCATION = 2, TRIPREQUEST=3;
     ArrayList<Messages> messagesArrayList = new ArrayList<>();
     private MessageAdapter messageAdapter;
     private User user;
@@ -149,16 +149,20 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
         });
 
         requestTrip.setOnClickListener(view1 -> {
-            RequestTripFragment requestTripFragment = new RequestTripFragment();
-            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-            Bundle bundle = new Bundle();
-            bundle.putString(Parameters.GROUP_ID, groupId);
-            bundle.putSerializable(Parameters.USER_ID, user);
-            requestTripFragment.setArguments(bundle);
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.nav_host_fragment, requestTripFragment, "Chat Fragment");
-            fragmentTransaction.addToBackStack(null);
-            fragmentTransaction.commit();
+            Intent intent = new Intent(getActivity(), RequestTripFragment.class);
+            intent.putExtra(Parameters.GROUP_ID, groupId);
+            intent.putExtra(Parameters.USER_ID, user);
+            startActivityForResult(intent, TRIPREQUEST);
+//            RequestTripFragment requestTripFragment = new RequestTripFragment();
+//            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+//            Bundle bundle = new Bundle();
+//            bundle.putString(Parameters.GROUP_ID, groupId);
+//            bundle.putSerializable(Parameters.USER_ID, user);
+//            requestTripFragment.setArguments(bundle);
+//            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//            fragmentTransaction.replace(R.id.nav_host_fragment, requestTripFragment, "Chat Fragment");
+//            fragmentTransaction.addToBackStack(null);
+//            fragmentTransaction.commit();
         });
         return view;
     }
@@ -277,8 +281,18 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
         else if (requestCode == LIVELOCATION){
             Toast.makeText(getContext(), "DRIVER WILL BE HERE SOON", Toast.LENGTH_LONG).show();
         }
+        else if (requestCode == TRIPREQUEST){
+            Toast.makeText(getContext(), "TRIP REQUEST", Toast.LENGTH_LONG).show();
+        }
 
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Toast.makeText(getContext(), "DESTROY", Toast.LENGTH_LONG).show();
+    }
+
     PlaceLatitueLongitude startPoint = null;
     Drivers drivers = null;
     @Override
