@@ -141,8 +141,8 @@ public class PickUpOffersFragment extends FragmentActivity implements OnMapReady
         }
         LatLng latLng = new LatLng(riderLocation.getLatitude(), riderLocation.getLongitude());
         MarkerOptions marker = new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-        mMap.addMarker(marker);
-
+        Marker locationMarker = mMap.addMarker(marker);
+        locationMarker.showInfoWindow();
         boundsBuilder.include(latLng);
 //        mMap.addMarker(new MarkerOptions().position(riderLocation.getLatitude(), riderLocation.getLongitude()));
         LatLngBounds latLngBounds = boundsBuilder.build();
