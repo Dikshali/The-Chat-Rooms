@@ -264,4 +264,10 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
         tripRef.child(Parameters.DRIVERS).child(drivers.getDriverId()).setValue(drivers);
 
     }
+
+    @Override
+    public void viewDriversProgress(String messageId) {
+        tripRef = firebaseDatabase.getReference("chatRooms/trips/" + messageId );
+        //tripRef.child(Parameters.START_POINT).child(Parameters.LATITUDE)
+    }
 }

@@ -213,7 +213,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(messages.getCreatedOn());
         viewHolder.getMyTripProgressTime().setText(pt.format(date));
         viewHolder.getInfoButton().setOnClickListener(view -> {
-
+            messageInterface.viewDriversProgress(messages.getMessageId());
         });
     }
 
@@ -313,6 +313,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public interface MessageInterface {
         void viewPickUpOffers(String messageId);
         void setDriversLocation(User drivers, String messageId);
+        void viewDriversProgress(String messageId);
     }
 
 }
