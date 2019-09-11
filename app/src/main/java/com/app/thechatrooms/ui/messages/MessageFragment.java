@@ -291,6 +291,19 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
     public void onDestroyView() {
         super.onDestroyView();
         Toast.makeText(getContext(), "DESTROY", Toast.LENGTH_LONG).show();
+        tripRef = firebaseDatabase.getReference("chatRooms/trips/" );
+        tripRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     PlaceLatitueLongitude startPoint = null;
