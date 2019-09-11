@@ -28,6 +28,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -43,6 +44,7 @@ import com.app.thechatrooms.adapters.MessageAdapter;
 import com.app.thechatrooms.models.GroupOnlineUsers;
 import com.app.thechatrooms.models.Messages;
 import com.app.thechatrooms.models.User;
+import com.app.thechatrooms.ui.mapsUtility.MapsActivity;
 import com.app.thechatrooms.utilities.Parameters;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -187,13 +189,13 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
                     startActivity(intent);
                 }else {
                     Intent intent = new Intent(getActivity(), MapsActivity.class);
-                    startActivity(intent);
+                    startActivityForResult(intent, Parameters.INTENT_CODE);
                 }
-
             }
         });
         return view;
     }
+
 
     public void checkFineLocationPermissionGranted() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -236,6 +238,16 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
 
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        }else{
+            if (requestCode == Parameters.INTENT_CODE) {
+                if(resultCode == Activity.RESULT_OK){
+                    double[] result=data.getDoubleArrayExtra("result");
+                    Toast.makeText(getActivity(), result[0] + ",  "+result[1], Toast.LENGTH_SHORT).show();
+                }
+                if (resultCode == Activity.RESULT_CANCELED) {
+                    Toast.makeText(getActivity(), "map return result cancel", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }

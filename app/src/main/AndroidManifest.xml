@@ -8,10 +8,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <meta-data
-        android:name="com.google.android.geo.API_KEY"
-        android:value="@string/google_maps_key" />
-
     <application
         android:allowBackup="true"
         android:icon="@drawable/chat_bubble"
@@ -19,7 +15,32 @@
         android:roundIcon="@drawable/chat_bubble"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <!--<meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_ic_notification" />
+        &lt;!&ndash; Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more. &ndash;&gt;
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" />
+        &lt;!&ndash; [END fcm_default_icon] &ndash;&gt;
+        &lt;!&ndash; [START fcm_default_channel] &ndash;&gt;
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" />
+        &lt;!&ndash; [END fcm_default_channel] &ndash;&gt;-->
+        <service
+            android:name=".MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
         <activity android:name=".SignUpActivity"></activity>
+        <activity
+            android:name=".ui.mapsUtility.MapsActivity"
+            android:label="@string/title_activity_maps">
+        </activity>
         <activity
             android:name=".HomeActivity"
             android:label="@string/title_activity_home"
@@ -31,6 +52,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
     </application>
 
 </manifest>

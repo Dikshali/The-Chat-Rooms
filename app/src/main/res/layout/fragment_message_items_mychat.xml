@@ -7,7 +7,13 @@
     android:clipToPadding="false"
     android:paddingVertical="10dp"
     tools:targetApi="o">
-
+<LinearLayout
+    android:id="@+id/myChat_linearLayout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true"
+    android:layout_alignParentEnd="true"
+    android:background="@drawable/message_chat_bubble">
     <TextView
         android:id="@+id/myChat_messageTextView"
         android:layout_width="wrap_content"
@@ -15,17 +21,28 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="1dp"
-        android:background="@drawable/message_chat_bubble"
         android:elevation="2dp"
         android:padding="10dp"
         android:textColor="#ffffff"
         android:textSize="14sp" />
+    <!--<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="250dp"
+        android:layout_height="300dp"
+        tools:context=".ui.mapsUtility.MapsActivity"
+        />-->
+
+</LinearLayout>
+
 
     <ImageButton
         android:id="@+id/myChat_deleteImageButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/myChat_messageTextView"
+        android:layout_below="@+id/myChat_linearLayout"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="3dp"
         android:layout_marginEnd="3dp"
@@ -37,7 +54,7 @@
         android:id="@+id/myChat_likeCountTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/myChat_messageTextView"
+        android:layout_below="@+id/myChat_linearLayout"
         android:layout_marginTop="3dp"
         android:layout_marginEnd="3dp"
         android:layout_toStartOf="@+id/myChat_deleteImageButton"
@@ -47,7 +64,7 @@
         android:id="@+id/myChat_likeImageButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/myChat_messageTextView"
+        android:layout_below="@+id/myChat_linearLayout"
         android:layout_marginTop="3dp"
         android:layout_marginEnd="3dp"
         android:layout_toStartOf="@+id/myChat_likeCountTextView"
@@ -59,7 +76,7 @@
         android:id="@+id/myChat_timeTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/myChat_messageTextView"
+        android:layout_below="@+id/myChat_linearLayout"
         android:layout_marginTop="3dp"
         android:layout_marginEnd="3dp"
         android:layout_toStartOf="@+id/myChat_likeImageButton" />

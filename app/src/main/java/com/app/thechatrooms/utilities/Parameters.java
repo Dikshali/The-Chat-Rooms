@@ -12,4 +12,6 @@ public final class Parameters {
     public static final String UNABLE_TO_UPLOAD_IMAGE = "Unable to upload profile image! Try with a smaller image";
     public static final String SHOW_MEMBERS = "Show_Members";
     public static final String CANCEL = "Cancel";
+    public static final int RESULT_OK = 200;
+    public static final int INTENT_CODE = 100;
 }
