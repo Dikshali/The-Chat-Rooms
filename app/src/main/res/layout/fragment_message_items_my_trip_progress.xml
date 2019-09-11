@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clipToPadding="false"
+    android:paddingVertical="10dp"
+    android:paddingRight="5dp"
+    tools:targetApi="o">
+
+    <ImageButton
+        android:id="@+id/myTripProgress_deleteImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/myTripProgress_messageTextView"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="3dp"
+        android:background="@null"
+        android:contentDescription="@string/delete"
+        app:srcCompat="@drawable/ic_delete_black" />
+
+    <ImageButton
+        android:id="@+id/myTripProgress_drivers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/myTripProgress_messageTextView"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="3dp"
+        android:layout_toStartOf="@+id/myTripProgress_timeTextView"
+        android:background="@null"
+        app:srcCompat="@drawable/baseline_directions_car_24" />
+
+    <ImageButton
+        android:id="@+id/myTripProgress_likeImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/myTripProgress_messageTextView"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="3dp"
+        android:layout_toStartOf="@+id/myTripProgress_likeCountTextView"
+        android:background="@null"
+        android:contentDescription="@string/like"
+        app:srcCompat="@drawable/ic_thumb_up_light_blue" />
+
+    <ImageButton
+        android:id="@+id/myTripProgress_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/myTripProgress_messageTextView"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="3dp"
+        android:layout_toStartOf="@+id/myTripProgress_drivers"
+        android:background="@null"
+        app:srcCompat="@drawable/baseline_info_24" />
+
+    <TextView
+        android:id="@+id/myTripProgress_likeCountTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/myTripProgress_messageTextView"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="3dp"
+        android:layout_toStartOf="@+id/myTripProgress_deleteImageButton"
+        android:textColor="?attr/colorPrimaryDark" />
+
+    <TextView
+        android:id="@+id/myTripProgress_timeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/myTripProgress_messageTextView"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="3dp"
+        android:layout_toStartOf="@+id/myTripProgress_likeImageButton" />
+
+    <TextView
+        android:id="@+id/myTripProgress_messageTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="1dp"
+        android:background="@drawable/message_mytriprequest_bubble"
+        android:elevation="2dp"
+        android:padding="10dp"
+        android:textColor="#ffffff"
+        android:textSize="14sp" />
+
+
+</RelativeLayout>

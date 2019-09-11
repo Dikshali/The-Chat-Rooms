@@ -12,4 +12,27 @@ public final class Parameters {
     public static final String UNABLE_TO_UPLOAD_IMAGE = "Unable to upload profile image! Try with a smaller image";
     public static final String SHOW_MEMBERS = "Show_Members";
     public static final String CANCEL = "Cancel";
+    public static final String MESSAGE_TYPE_NORMAL = "textMessage";
+    public static final String GROUP_ID = "GroupId";
+    public static final String TRIP_REQUEST = "Trip Request";
+    public static final String TRIP_PROGRESS = "Trip in Progress";
+    public static final String MESSAGE = "message";
+
+
+    public static final String MESSAGE_TYPE = "messageType";
+    public static final String MESSAGE_TYPE_RIDE_REQUEST = "rideRequest";
+    public static final String MESSAGE_TYPE_RIDE_IN_PROGRESS = "rideProgress";
+    public static final String MESSAGE_TYPE_RIDE_COMPLETE = "rideComplete";
+    public static final String TRIP_STATUS = "tripStatus";
+    public static final String DRIVER_ACCEPTED = "driverAccepted";
+
+
+    public static final String TRIP_STATUS_START = "tripStart";
+    public static final String TRIP_STATUS_PROGRESS = "tripProgress";
+    public static final String TRIP_STATUS_ENG = "tripEnd";
+
+    public static final String MESSAGE_ID = "messageId";
+    public static final String DRIVERS = "drivers";
+
+
 }

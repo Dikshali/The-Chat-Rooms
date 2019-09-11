@@ -9,14 +9,16 @@ public class Messages {
     private String createdBy;
     private String createdByName;
     private String createdOn;
+    private String messageType;
 
-    public Messages(String messageId, String message, String createdBy, String createdByName, String createdOn) {
+    public Messages(String messageId, String message, String createdBy, String createdByName, String createdOn, String messageType) {
         this.messageId = messageId;
         this.message = message;
         this.likesUserId = new ArrayList<>();
         this.createdBy = createdBy;
         this.createdByName = createdByName;
         this.createdOn = createdOn;
+        this.messageType = messageType;
     }
 
     public Messages() {
@@ -78,6 +80,14 @@ public class Messages {
             likesUserId.add(id);
     }
 
+    public String getMessageType() {
+        return messageType;
+    }
+
+    public void setMessageType(String messageType) {
+        this.messageType = messageType;
+    }
+
     @Override
     public String toString() {
         return "Messages{" +
@@ -86,6 +96,7 @@ public class Messages {
                 ", createdBy='" + createdBy + '\'' +
                 ", createdByName='" + createdByName + '\'' +
                 ", createdOn='" + createdOn + '\'' +
+                ", messageType='"+ messageType + '\''+
                 '}';
     }
 

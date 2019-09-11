@@ -38,7 +38,7 @@ public class ChatsFragment extends Fragment implements ChatFragmentAdapter.ChatF
     private User user;
     private ChatFragmentAdapter chatFragmentAdapter;
     private StorageReference mStorageRef;
-    private DatabaseReference myRef;
+    private DatabaseReference myRef, groupRef, messageRef;
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth mAuth;
     private String userId;
@@ -109,7 +109,12 @@ public class ChatsFragment extends Fragment implements ChatFragmentAdapter.ChatF
 
     @Override
     public void deleteGroup(GroupChatRoom groupChatRoom) {
-        myRef.child(groupChatRoom.getGroupId()).setValue(null);
+        groupRef = database.getReference("chatRooms/groupChatRoom/" + groupChatRoom.getGroupId());
+        groupRef.setValue(null);
+
+        messageRef = database.getReference("chatRooms/messages/"+ groupChatRoom.getGroupId());
+        messageRef.setValue(null);
+
         chatFragmentAdapter.notifyDataSetChanged();
     }
 

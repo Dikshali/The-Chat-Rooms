@@ -46,4 +46,6 @@
     <string name="enter_your_message">Enter your message</string>
     <string name="like">Like</string>
     <string name="action_showMembers">Show Members</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="request_trip">Request Trip</string>
 </resources>
