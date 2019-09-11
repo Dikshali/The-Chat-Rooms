@@ -142,7 +142,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             View v1 = inflater.inflate(R.layout.fragment_message_items_my_trip_progress, parent, false);
             viewHolder = new MyTripInProgressViewHolder(v1);
         } else {
-            View v1 = inflater.inflate(R.layout.fragment_message_items_my_trip_progress, parent, false);
+            View v1 = inflater.inflate(R.layout.fragment_message_items_their_trip_progress, parent, false);
             viewHolder = new TheirTripInProgressViewHolder(v1);
         }
         return viewHolder;
@@ -220,7 +220,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private void configureTheirTripProgressViewHolder(TheirTripInProgressViewHolder viewHolder, int position) throws ParseException {
 
         Messages messages = messagesArrayList.get(position);
+        Log.d("Message", messages.getCreatedByName());
         viewHolder.getSenderName().setText(messages.getCreatedByName());
+        viewHolder.getTheirTripProgressMessage().setText(messages.getMessage());
         Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(messages.getCreatedOn());
         viewHolder.getTheirTripProgressTime().setText(pt.format(date));
     }

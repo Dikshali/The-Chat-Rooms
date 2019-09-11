@@ -40,7 +40,7 @@ public class TheirTripInProgressViewHolder extends RecyclerView.ViewHolder {
     }
 
     public TextView getSenderName() {
-        return senderName;
+        return this.senderName;
     }
 
     public void setSenderName(TextView senderName) {

@@ -47,11 +47,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
         checkInternetPermissionGranted();
         checkReadStoragePermissionGranted();
         checkWriteStoragePermissionGranted();
+        /*checkCoarseLocationPermissionGranted();
+        checkFineLocationPermissionGranted();*/
 
         findViewById(R.id.main_signUpTextView).setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, SignUpActivity.class);
@@ -176,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
             Log.v(TAG, "Permission is granted");
         }
     }
+
 
     @Override
     public void onBackPressed() {

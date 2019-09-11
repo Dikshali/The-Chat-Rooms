@@ -65,11 +65,5 @@
         android:layout_marginBottom="3dp"
         android:layout_toEndOf="@+id/theirTripProgress_likeImageButton" />
 
-    <ImageButton
-        android:id="@+id/fragment_message_items_their_trip_request_accept"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/rounded_button"
-        android:layout_below="@id/theirTripProgress_likeImageButton" />
 
 </RelativeLayout>
