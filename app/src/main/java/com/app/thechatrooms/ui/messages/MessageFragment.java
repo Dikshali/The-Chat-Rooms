@@ -43,6 +43,7 @@ import com.app.thechatrooms.models.PlaceLatitueLongitude;
 import com.app.thechatrooms.models.User;
 import com.app.thechatrooms.ui.trips.PickUpOffersFragment;
 import com.app.thechatrooms.ui.trips.RequestTripFragment;
+import com.app.thechatrooms.ui.trips.TripLiveLocationFragment;
 import com.app.thechatrooms.utilities.Parameters;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
@@ -268,6 +269,13 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
     @Override
     public void viewDriversProgress(String messageId) {
         tripRef = firebaseDatabase.getReference("chatRooms/trips/" + messageId );
+
+        Intent intent = new Intent(getActivity(), TripLiveLocationFragment.class);
+//        intent.putExtra(Parameters.GROUP_ID, groupId);
+//        intent.putExtra(Parameters.MESSAGE_ID, messageId);
+
+        startActivity(intent);
+
         //tripRef.child(Parameters.START_POINT).child(Parameters.LATITUDE)
     }
 }
