@@ -18,7 +18,7 @@ public final class Parameters {
     public static final String TRIP_PROGRESS = "Trip in Progress";
     public static final String MESSAGE = "message";
 
-
+    public static final String ADD_TRIPS = "addTrip";
     public static final String MESSAGE_TYPE = "messageType";
     public static final String MESSAGE_TYPE_RIDE_REQUEST = "rideRequest";
     public static final String MESSAGE_TYPE_RIDE_IN_PROGRESS = "rideProgress";
@@ -26,6 +26,7 @@ public final class Parameters {
     public static final String TRIP_STATUS = "tripStatus";
     public static final String DRIVER_ACCEPTED = "driverAccepted";
 
+    public static final String RIDERS = "riders";
 
     public static final String TRIP_STATUS_START = "tripStart";
     public static final String TRIP_STATUS_PROGRESS = "tripProgress";

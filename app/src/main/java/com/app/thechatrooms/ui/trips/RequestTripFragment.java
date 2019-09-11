@@ -56,7 +56,7 @@ public class RequestTripFragment extends FragmentActivity {
     static final int TRIPREQUEST=3;
     User user;
     String groupId;
-    private DatabaseReference myRef, tripRef;
+    private DatabaseReference myRef, tripRef, addTrip;
     private FirebaseDatabase firebaseDatabase;
     private GoogleMap mMap;
     PlaceLatitueLongitude startPointLocation = new PlaceLatitueLongitude(), endPointLocation = new PlaceLatitueLongitude();
@@ -132,7 +132,9 @@ public class RequestTripFragment extends FragmentActivity {
                         user.getFirstName() + " " + user.getLastName(), createdOn, Parameters.MESSAGE_TYPE_RIDE_REQUEST);
                 myRef.child(messageId).setValue(messages);
                 tripRef = firebaseDatabase.getReference("chatRooms/trips/" + messageId);
-
+                addTrip = firebaseDatabase.getReference("chatRooms");
+                String key = addTrip.child(Parameters.ADD_TRIPS).child(Parameters.RIDERS).child(user.getId()).push().getKey();
+                addTrip.child(Parameters.ADD_TRIPS).child(Parameters.RIDERS).child(user.getId()).child(key).setValue(messageId);
                 Trips trips = new Trips(Parameters.TRIP_STATUS_START, user.getId(), null, startPointLocation, endPointLocation, null);
                 tripRef.setValue(trips);
 

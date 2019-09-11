@@ -296,6 +296,8 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+
+
             }
 
             @Override
@@ -321,7 +323,7 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 startPoint = dataSnapshot.child(Parameters.START_POINT).getValue(PlaceLatitueLongitude.class);
                 drivers = dataSnapshot.child(Parameters.DRIVER_ACCEPTED).getValue(Drivers.class);
-                Log.d("Drovers", dataSnapshot.child(Parameters.DRIVER_ACCEPTED).toString());
+                Log.d("Drivers", dataSnapshot.child(Parameters.DRIVER_ACCEPTED).toString());
                 intent.putExtra(Parameters.DRIVER_ACCEPTED ,drivers);
                 intent.putExtra(Parameters.START_POINT, startPoint);
                 startActivityForResult(intent, LIVELOCATION);

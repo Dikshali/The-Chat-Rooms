@@ -53,7 +53,7 @@ public class PickUpOffersFragment extends FragmentActivity implements OnMapReady
     private String messageId, groupId;
 
 
-    private DatabaseReference myRef, messageRef, tripRef;
+    private DatabaseReference myRef, messageRef, tripRef, addTrip;
     PlaceLatitueLongitude riderLocation;
     private GoogleMap mMap;
     private FirebaseDatabase firebaseDatabase;
@@ -190,6 +190,11 @@ public class PickUpOffersFragment extends FragmentActivity implements OnMapReady
         tripRef = firebaseDatabase.getReference("chatRooms/trips/"+messageId);
         tripRef.child(Parameters.DRIVERS).setValue(null);
         tripRef.child(Parameters.DRIVER_ACCEPTED).setValue(drivers);
+
+        addTrip = firebaseDatabase.getReference("chatRooms");
+        String key = addTrip.child(Parameters.ADD_TRIPS).child(Parameters.DRIVERS).child(drivers.getDriverId()).push().getKey();
+        addTrip.child(Parameters.ADD_TRIPS).child(Parameters.DRIVERS).child(drivers.getDriverId()).child(key).setValue(messageId);
+
         finish();
     }
 }
