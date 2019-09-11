@@ -1,6 +1,8 @@
 package com.app.thechatrooms.models;
 
-public class Drivers {
+import java.io.Serializable;
+
+public class Drivers implements Serializable {
     private String driverId, driverName;
     private PlaceLatitueLongitude driverLocation;
 

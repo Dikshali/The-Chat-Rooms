@@ -279,7 +279,8 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
         }
 
     }
-
+    PlaceLatitueLongitude startPoint = null;
+    Drivers drivers = null;
     @Override
     public void viewDriversProgress(String messageId) {
         tripRef = firebaseDatabase.getReference("chatRooms/trips/" + messageId );
@@ -288,7 +289,23 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
 //        intent.putExtra(Parameters.GROUP_ID, groupId);
 //        intent.putExtra(Parameters.MESSAGE_ID, messageId);
 
-        startActivityForResult(intent, LIVELOCATION);
+        tripRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                startPoint = dataSnapshot.child(Parameters.START_POINT).getValue(PlaceLatitueLongitude.class);
+                drivers = dataSnapshot.child(Parameters.DRIVER_ACCEPTED).getValue(Drivers.class);
+                Log.d("Drovers", dataSnapshot.child(Parameters.DRIVER_ACCEPTED).toString());
+                intent.putExtra(Parameters.DRIVER_ACCEPTED ,drivers);
+                intent.putExtra(Parameters.START_POINT, startPoint);
+                startActivityForResult(intent, LIVELOCATION);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
         //tripRef.child(Parameters.START_POINT).child(Parameters.LATITUDE)
     }

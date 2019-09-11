@@ -1,6 +1,8 @@
 package com.app.thechatrooms.models;
 
-public class PlaceLatitueLongitude {
+import java.io.Serializable;
+
+public class PlaceLatitueLongitude implements Serializable {
     private Double latitude;
 
     public PlaceLatitueLongitude(){
