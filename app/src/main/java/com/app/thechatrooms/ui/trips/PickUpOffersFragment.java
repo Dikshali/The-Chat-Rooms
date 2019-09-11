@@ -134,15 +134,17 @@ public class PickUpOffersFragment extends FragmentActivity implements OnMapReady
         for (HashMap.Entry<String, Drivers> entry: driversArrayList.entrySet()){
 
             LatLng latLng = new LatLng(entry.getValue().getDriverLocation().getLatitude(), entry.getValue().getDriverLocation().getLongitude());
-            mMap.addMarker(new MarkerOptions().position(latLng).title(entry.getValue().getDriverName())).setTag(entry.getValue().getDriverId());
-//            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            MarkerOptions mkOptions = new MarkerOptions().position(latLng).title(entry.getValue().getDriverName());
+           Marker locationMarker = mMap.addMarker(mkOptions);
+           locationMarker.setTag(entry.getValue().getDriverId());
+            locationMarker.showInfoWindow();
             boundsBuilder.include(latLng);
 
         }
         LatLng latLng = new LatLng(riderLocation.getLatitude(), riderLocation.getLongitude());
         MarkerOptions marker = new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-        Marker locationMarker = mMap.addMarker(marker);
-        locationMarker.showInfoWindow();
+        mMap.addMarker(marker);
+
         boundsBuilder.include(latLng);
 //        mMap.addMarker(new MarkerOptions().position(riderLocation.getLatitude(), riderLocation.getLongitude()));
         LatLngBounds latLngBounds = boundsBuilder.build();
@@ -158,16 +160,19 @@ public class PickUpOffersFragment extends FragmentActivity implements OnMapReady
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        Log.d("MARKER", (String) marker.getTag());
+        if(marker!=null){
+            Log.d("MARKER", (String) marker.getTag());
 
-        messageRef = firebaseDatabase.getReference("chatRooms/messages/"+groupId);
-        messageRef.child(messageId).child(Parameters.MESSAGE_TYPE).setValue(Parameters.MESSAGE_TYPE_RIDE_IN_PROGRESS);
-        messageRef.child(messageId).child(Parameters.MESSAGE).setValue(Parameters.TRIP_PROGRESS);
-        tripRef = firebaseDatabase.getReference("chatRooms/trips/"+messageId);
-        tripRef.child(Parameters.TRIP_STATUS).setValue(Parameters.TRIP_STATUS_PROGRESS);
-        tripRef.child(Parameters.DRIVERS).setValue(null);
+            messageRef = firebaseDatabase.getReference("chatRooms/messages/"+groupId);
+            messageRef.child(messageId).child(Parameters.MESSAGE_TYPE).setValue(Parameters.MESSAGE_TYPE_RIDE_IN_PROGRESS);
+            messageRef.child(messageId).child(Parameters.MESSAGE).setValue(Parameters.TRIP_PROGRESS);
+            tripRef = firebaseDatabase.getReference("chatRooms/trips/"+messageId);
+            tripRef.child(Parameters.TRIP_STATUS).setValue(Parameters.TRIP_STATUS_PROGRESS);
+            tripRef.child(Parameters.DRIVERS).setValue(null);
 
-        tripRef.child(Parameters.DRIVER_ACCEPTED).setValue(marker.getTag());
+            tripRef.child(Parameters.DRIVER_ACCEPTED).setValue(marker.getTag());
+        }
+
         return false;
     }
 }
