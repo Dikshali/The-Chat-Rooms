@@ -157,7 +157,7 @@ public class PickUpOffersFragment extends FragmentActivity implements OnMapReady
 
     }
 
-
+    Drivers drivers;
     @Override
     public boolean onMarkerClick(Marker marker) {
         if(marker!=null){
@@ -168,11 +168,27 @@ public class PickUpOffersFragment extends FragmentActivity implements OnMapReady
             messageRef.child(messageId).child(Parameters.MESSAGE).setValue(Parameters.TRIP_PROGRESS);
             tripRef = firebaseDatabase.getReference("chatRooms/trips/"+messageId);
             tripRef.child(Parameters.TRIP_STATUS).setValue(Parameters.TRIP_STATUS_PROGRESS);
-            tripRef.child(Parameters.DRIVERS).setValue(null);
 
-            tripRef.child(Parameters.DRIVER_ACCEPTED).setValue(marker.getTag());
+            drivers = new Drivers();
+            tripRef.child(Parameters.DRIVERS).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Drivers drivers1 = dataSnapshot.child((String) marker.getTag()).getValue(Drivers.class);
+                    addDriverAccepted(drivers1, messageId);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
         }
 
         return false;
+    }
+    public void addDriverAccepted(Drivers drivers, String messageId){
+        tripRef = firebaseDatabase.getReference("chatRooms/trips/"+messageId);
+        tripRef.child(Parameters.DRIVERS).setValue(null);
+        tripRef.child(Parameters.DRIVER_ACCEPTED).setValue(drivers);
     }
 }
