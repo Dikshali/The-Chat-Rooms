@@ -25,7 +25,7 @@
         android:id="@+id/theirTripRequest_messageTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/theirTripRequest_senderNameTextView"
+        android:layout_below="@+id/fragment_message_items_their_trip_request_info"
         android:layout_alignStart="@+id/theirTripRequest_senderNameTextView"
         android:background="@drawable/message_theirtriprequest_bubble"
         android:elevation="2dp"
@@ -55,6 +55,16 @@
         android:paddingBottom="4dp"
         android:textStyle="bold" />
 
+    <ImageButton
+        android:id="@+id/fragment_message_items_their_trip_request_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:layout_toEndOf="@+id/theirTripRequest_senderNameTextView"
+        android:layout_alignParentTop="true"
+        android:background="@null"
+        app:srcCompat="@drawable/baseline_info_24" />
+
     <TextView
         android:id="@+id/theirTripRequest_timeTextView"
         android:layout_width="wrap_content"
@@ -69,7 +79,33 @@
         android:id="@+id/fragment_message_items_their_trip_request_accept"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/rounded_button"
-        android:layout_below="@id/theirTripRequest_likeImageButton" />
+        android:layout_below="@id/theirTripRequest_senderNameTextView"
+        android:layout_alignStart="@+id/theirChat_senderNameTextView"
+        android:layout_alignTop="@+id/theirTripRequest_messageTextView"
+        android:layout_marginTop="0dp"
+        android:layout_toEndOf="@+id/theirTripRequest_messageTextView"
+        android:background="@null"
+        app:srcCompat="@drawable/baseline_done_24" />
+
+    <ImageButton
+        android:id="@+id/fragment_message_items_their_trip_request_reject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fragment_message_items_their_trip_request_accept"
+        android:layout_marginTop="3dp"
+        android:layout_toEndOf="@+id/theirTripRequest_messageTextView"
+        android:background="@null"
+        app:srcCompat="@drawable/round_cancel_24" />
+
+    <TextView
+        android:id="@+id/fragment_message_items_their_trip_request_openInMaps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/theirTripRequest_messageTextView"
+        android:layout_marginStart="3dp"
+        android:layout_marginTop="3dp"
+        android:layout_toEndOf="@+id/theirTripRequest_timeTextView"
+        android:text="Open In Maps"
+        android:textColor="#2196F3" />
 
 </RelativeLayout>

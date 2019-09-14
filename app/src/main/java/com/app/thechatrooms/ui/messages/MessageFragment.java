@@ -6,6 +6,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -47,6 +49,8 @@ import com.app.thechatrooms.ui.trips.RequestTripFragment;
 import com.app.thechatrooms.ui.trips.TripLiveLocationFragment;
 import com.app.thechatrooms.utilities.Parameters;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -54,10 +58,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -69,7 +76,7 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
     ArrayList<Messages> messagesArrayList = new ArrayList<>();
     private MessageAdapter messageAdapter;
     private User user;
-    private DatabaseReference myRef, groupDbRef, tripRef;
+    private DatabaseReference myRef, groupDbRef, tripRef,userRef;
     private FirebaseDatabase firebaseDatabase;
     LatLng latlng;
     LocationListener locationListener;
@@ -310,6 +317,7 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
 
     PlaceLatitueLongitude startPoint = null;
     Drivers drivers = null;
+
     @Override
     public void viewDriversProgress(String messageId) {
         tripRef = firebaseDatabase.getReference("chatRooms/trips/" + messageId );
@@ -337,5 +345,69 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
 
 
         //tripRef.child(Parameters.START_POINT).child(Parameters.LATITUDE)
+    }
+
+    @Override
+    public void theirTripRequestInfo(String messageId) {
+
+        tripRef = firebaseDatabase.getReference("chatRooms/trips/" + messageId );
+        tripRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Geocoder geocoder;
+                List<Address> addresses,endAddresses;
+                geocoder = new Geocoder(getContext(), Locale.getDefault());
+
+                Double startPointLat = (Double) dataSnapshot.child(Parameters.START_POINT).child(Parameters.LATITUDE).getValue();
+                Double startPointLong = (Double) dataSnapshot.child(Parameters.START_POINT).child(Parameters.LONGITUDE).getValue();
+                Double endPointLat =(Double)  dataSnapshot.child("endPoint").child(Parameters.LATITUDE).getValue();
+                Double endPointLong = (Double) dataSnapshot.child("endPoint").child(Parameters.LONGITUDE).getValue();
+//                PlaceLatitueLongitude startPoint = (PlaceLatitueLongitude) dataSnapshot.child(Parameters.START_POINT).getValue();
+//                PlaceLatitueLongitude endPoint = (PlaceLatitueLongitude) dataSnapshot.child("endPoint").getValue();
+                String riderId = (String) dataSnapshot.child("riderId").getValue();
+
+                try {
+                    addresses = geocoder.getFromLocation(startPointLat, startPointLong, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                    endAddresses = geocoder.getFromLocation(endPointLat, endPointLong, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                    String sAdress = addresses.get(0).getAddressLine(0);
+                    String eAddress = endAddresses.get(0).getAddressLine(0);
+                    showDialog(sAdress, eAddress, riderId);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+//                String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+//                String city = addresses.get(0).getLocality();
+//                String state = addresses.get(0).getAdminArea();
+//                String country = addresses.get(0).getCountryName();
+//                String postalCode = addresses.get(0).getPostalCode();
+//                String knownName = addresses.get(0).getFeatureName();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+    void showDialog(String start, String end, String riderId) {
+        userRef = firebaseDatabase.getReference("chatRooms/userProfiles/"+riderId);
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String name = (String) dataSnapshot.child("firstName").getValue();
+                String profileImage = (String) dataSnapshot.child("userProfileImageUrl").getValue();
+                DialogFragment newFragment = TheirTripRequestDialog.newInstance(name, start, end, profileImage);
+                newFragment.show(getFragmentManager(), "dialog");
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

@@ -260,34 +260,12 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
         });
         viewHolder.getAccept().setOnClickListener(view -> {
-
-//            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show();
-//                ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
-//                return;
-//            }
-//
-//            if (location != null) {
-//                latitude = location.getLatitude();
-//                longitude = location.getLongitude();
-//                Log.d("Map Activity not null", "Location: latitude: " + location.getLatitude() + " longitude: " + location.getLongitude());
-//            } else {
-//                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
-//                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-//                    return;
-//                }
-//                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 10, locationListener);
-//            }
-            //lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 10, locationListener);
-//            PlaceLatitueLongitude placeLatitueLongitude = new PlaceLatitueLongitude(location.getLatitude(), location.getLongitude());
-//            Drivers drivers = new Drivers(user.getId(), user.getFirstName(), placeLatitueLongitude);
-//            tripRef.child(messages.getMessageId()).child("drivers").child(drivers.getDriverId()).setValue(drivers);
-            //PlaceLatitueLongitude placeLatitueLongitude = new PlaceLatitueLongitude(0.0,0.0);
-//            Drivers drivers = new Drivers(user.getId(), user.getFirstName(), placeLatitueLongitude);
             messageInterface.setDriversLocation(user, messages.getMessageId());
-//            tripRef.child(Parameters.DRIVERS).child(drivers.getDriverId()).setValue(drivers);
         });
+        viewHolder.getInfoButton().setOnClickListener(view -> {
+            messageInterface.theirTripRequestInfo(messages.getMessageId());
+        });
+
         Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(messages.getCreatedOn());
         viewHolder.getTheirTripRequestTime().setText(pt.format(date));
     }
@@ -333,6 +311,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         void viewPickUpOffers(String messageId);
         void setDriversLocation(User drivers, String messageId);
         void viewDriversProgress(String messageId);
+        void theirTripRequestInfo(String messageId);
     }
 
 }
