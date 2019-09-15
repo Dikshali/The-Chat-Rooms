@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -35,7 +34,7 @@ public class GetDirectionData extends AsyncTask<Object, String, String > {
     String data="";
     InputStream inputStream =null;
     Context context;
-    GetDirectionData(Context c){
+    public GetDirectionData(Context c){
         this.context = c;
     }
     @Override
@@ -112,8 +111,8 @@ public class GetDirectionData extends AsyncTask<Object, String, String > {
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
             builder.include(bounds.get(0));
             builder.include(bounds.get(1));
-            mMap.addMarker(new MarkerOptions().position(start));
-            mMap.addMarker(new MarkerOptions().position(end).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+            mMap.addMarker(new MarkerOptions().position(start)).setTitle("Source");
+            mMap.addMarker(new MarkerOptions().position(end).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))).setTitle("Destination");
             mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 200));
 
         } catch (JSONException e) {

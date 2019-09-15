@@ -36,6 +36,7 @@ public final class Parameters {
     public static final String DRIVERS = "drivers";
 
     public static final String START_POINT = "startPoint";
+    public static final String END_POINT = "endPoint";
     public static final String LATITUDE = "latitude";
     public static final String LONGITUDE = "longitude";
 

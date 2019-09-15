@@ -107,21 +107,6 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
         firebaseDatabase = FirebaseDatabase.getInstance();
         myRef = firebaseDatabase.getReference("chatRooms/messages/" + groupId);
         groupDbRef = firebaseDatabase.getReference("chatRooms/groupChatRoom/" + groupId + "/membersListWithOnlineStatus");
-        /*groupDbRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                hashMap.clear();
-                for (DataSnapshot val: dataSnapshot.getChildren()){
-                    GroupOnlineUsers onlineUser = val.getValue(GroupOnlineUsers.class);
-                    hashMap.put(val.getKey(),onlineUser);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });*/
 
         myRef.addValueEventListener(new ValueEventListener() {
             @Override

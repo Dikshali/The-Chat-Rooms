@@ -44,7 +44,7 @@ public class TripLiveLocationFragment extends FragmentActivity implements OnMapR
             sb.append("https://maps.googleapis.com/maps/api/directions/json?");
             sb.append("origin="+startLat+","+ startLong);
             sb.append("&destination="+destinationLat+","+ destinationLong);
-            sb.append("&key="+"AIzaSyCjQlEN9SKDCtC30zy7grp-lyhPjEv792Q");
+            sb.append("&key="+getResources().getString(R.string.google_api_key));
 
             GetDirectionData getDirectionData = new GetDirectionData(getApplicationContext());
             Object[] data = new Object[4];

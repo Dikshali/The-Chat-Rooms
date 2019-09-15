@@ -3,6 +3,7 @@ package com.app.thechatrooms.adapters;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -19,6 +20,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.app.thechatrooms.MapsActivity;
 import com.app.thechatrooms.R;
 import com.app.thechatrooms.models.Drivers;
 import com.app.thechatrooms.models.Messages;
@@ -32,6 +34,7 @@ import com.app.thechatrooms.ui.messages.TheirMessageViewHolder;
 import com.app.thechatrooms.ui.messages.TheirTripInProgressViewHolder;
 import com.app.thechatrooms.ui.messages.TheirTripRequestViewHolder;
 import com.app.thechatrooms.utilities.Parameters;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -47,37 +50,17 @@ import java.util.Date;
 
 public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final int MY_TEXT_MESSAGE = 0, THEIR_TEXT_MESSAGE = 1, MY_TRIP_REQUEST = 2, THEIR_TRIP_REQUEST = 3, THEIR_TRIP_PROGRESS = 5, MY_TRIP_PROGRESS = 4;
-    Context context;
-    ArrayList<Messages> messagesArrayList;
-    User user;
-    String groupId;
-    MessageInterface messageInterface;
-    PrettyTime pt = new PrettyTime();
+    private Context context;
+    private ArrayList<Messages> messagesArrayList;
+    private User user;
+    private String groupId;
+    private MessageInterface messageInterface;
+    private PrettyTime pt = new PrettyTime();
     private DatabaseReference myRef, tripRef;
     private FirebaseDatabase firebaseDatabase;
-    private LocationListener locationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) {
-
-        }
-
-        @Override
-        public void onStatusChanged(String s, int i, Bundle bundle) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String s) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String s) {
-
-        }
-    };
-    LocationManager lm;
-    Location location;
+    private PlaceLatitueLongitude startPoint, endPoint;
+    private LocationManager lm;
+    private Location location;
 
     public MessageAdapter(User user, String groupId, ArrayList<Messages> messagesArrayList, Activity a, Context context, MessageInterface messageInterface) {
         this.messagesArrayList = messagesArrayList;
@@ -252,6 +235,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         viewHolder.getAccept().setClickable(false);
                     }
                 }
+                startPoint = dataSnapshot.child("startPoint").getValue(PlaceLatitueLongitude.class);
+                endPoint = dataSnapshot.child("endPoint").getValue(PlaceLatitueLongitude.class);
             }
 
             @Override
@@ -264,6 +249,16 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         });
         viewHolder.getInfoButton().setOnClickListener(view -> {
             messageInterface.theirTripRequestInfo(messages.getMessageId());
+        });
+
+        viewHolder.getOpenInMaps().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, MapsActivity.class);
+                intent.putExtra(Parameters.START_POINT, startPoint);
+                intent.putExtra(Parameters.END_POINT, endPoint);
+                context.startActivity(intent);
+            }
         });
 
         Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(messages.getCreatedOn());
