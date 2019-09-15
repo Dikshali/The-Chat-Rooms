@@ -39,6 +39,7 @@ import com.app.thechatrooms.models.Drivers;
 import com.app.thechatrooms.models.Messages;
 import com.app.thechatrooms.models.PlaceLatitudeLongitude;
 import com.app.thechatrooms.models.User;
+import com.app.thechatrooms.ui.profile.ProfileFragment;
 import com.app.thechatrooms.ui.trips.PickUpOffersFragment;
 import com.app.thechatrooms.ui.trips.RequestTripFragment;
 import com.app.thechatrooms.ui.trips.TripLiveLocationFragment;
@@ -305,25 +306,27 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
         tripRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Geocoder geocoder;
-                List<Address> addresses,endAddresses;
-                geocoder = new Geocoder(getContext(), Locale.getDefault());
-
-                Double startPointLat = (Double) dataSnapshot.child(Parameters.START_POINT).child(Parameters.LATITUDE).getValue();
-                Double startPointLong = (Double) dataSnapshot.child(Parameters.START_POINT).child(Parameters.LONGITUDE).getValue();
-                Double endPointLat =(Double)  dataSnapshot.child("endPoint").child(Parameters.LATITUDE).getValue();
-                Double endPointLong = (Double) dataSnapshot.child("endPoint").child(Parameters.LONGITUDE).getValue();
                 String riderId = (String) dataSnapshot.child("riderId").getValue();
+                userRef = firebaseDatabase.getReference("chatRooms/userProfiles");
+                userRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        User riderData = dataSnapshot.child(riderId).getValue(User.class);
+                        FragmentManager manager = getFragmentManager();
+                        FragmentTransaction fragmentTransaction = manager.beginTransaction();
+                        ProfileFragment profileFragment = new ProfileFragment();
+                        Bundle profileBundle = new Bundle();
+                        profileBundle.putSerializable(Parameters.USER_ID, riderData);
+                        profileFragment.setArguments(profileBundle);
+                        fragmentTransaction.replace(R.id.nav_host_fragment,profileFragment).addToBackStack(null);
+                        fragmentTransaction.commit();
+                    }
 
-                try {
-                    addresses = geocoder.getFromLocation(startPointLat, startPointLong, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-                    endAddresses = geocoder.getFromLocation(endPointLat, endPointLong, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-                    String sAddress = addresses.get(0).getAddressLine(0);
-                    String eAddress = endAddresses.get(0).getAddressLine(0);
-                    showDialog(sAddress, eAddress, riderId);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
 
             @Override
@@ -333,22 +336,5 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
         });
 
 
-    }
-    void showDialog(String start, String end, String riderId) {
-        userRef = firebaseDatabase.getReference("chatRooms/userProfiles/"+riderId);
-        userRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String name = (String) dataSnapshot.child("firstName").getValue();
-                String profileImage = (String) dataSnapshot.child("userProfileImageUrl").getValue();
-                DialogFragment newFragment = TheirTripRequestDialog.newInstance(name, start, end, profileImage);
-                newFragment.show(getFragmentManager(), "dialog");
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
     }
 }
