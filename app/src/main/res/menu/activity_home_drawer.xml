@@ -11,6 +11,9 @@
             android:id="@+id/nav_profile"
             android:title="@string/menu_profile" />
         <item
+            android:id="@+id/nav_myTrips"
+            android:title="@string/menu_myTrips" />
+        <item
             android:id="@+id/nav_contacts"
             android:title="@string/menu_contacts" />
         <item
