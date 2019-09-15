@@ -1,44 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.trips.RequestTripFragment">
 
-     <androidx.constraintlayout.widget.ConstraintLayout
-         android:layout_width="match_parent"
-         android:layout_height="match_parent">
+     <ImageView
+         android:id="@+id/requestRide_dotImageView"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_marginStart="32dp"
+         android:layout_marginTop="24dp"
+         android:contentDescription="@string/dot"
+         android:src="@drawable/ic_dot"
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintTop_toTopOf="parent" />
+
+     <ImageView
+         android:id="@+id/requestRide_boxImageView"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_marginTop="42dp"
+         android:contentDescription="@string/box"
+         android:src="@drawable/ic_box"
+         app:layout_constraintStart_toStartOf="@+id/requestRide_dotImageView"
+         app:layout_constraintTop_toBottomOf="@+id/requestRide_dotImageView" />
+
+     <androidx.cardview.widget.CardView
+         android:id="@+id/requestRide_pickUpCardView"
+         android:layout_width="0dp"
+         android:layout_height="wrap_content"
+         android:layout_margin="5dp"
+         android:layout_marginStart="32dp"
+         android:layout_marginTop="32dp"
+         android:layout_marginEnd="32dp"
+         app:cardCornerRadius="4dp"
+         app:layout_constraintEnd_toEndOf="parent"
+         app:layout_constraintStart_toEndOf="@+id/requestRide_dotImageView"
+         app:layout_constraintTop_toTopOf="parent">
 
           <fragment
-              android:id="@+id/fragment_request_trip_start_point"
+              android:id="@+id/requestRide_pickUpAutocompleteFragment"
               android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
               android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              app:layout_constraintEnd_toEndOf="parent"
-              app:layout_constraintHorizontal_bias="0.0"
-              app:layout_constraintStart_toStartOf="parent"
-              app:layout_constraintTop_toTopOf="parent" />
+              android:layout_height="wrap_content" />
+     </androidx.cardview.widget.CardView>
+
+     <androidx.cardview.widget.CardView
+         android:id="@+id/requestRide_dropOffCardView"
+         android:layout_width="0dp"
+         android:layout_height="wrap_content"
+         android:layout_margin="5dp"
+         android:layout_marginStart="32dp"
+         android:layout_marginTop="32dp"
+         android:layout_marginEnd="32dp"
+         app:cardCornerRadius="4dp"
+         app:layout_constraintEnd_toEndOf="@+id/requestRide_pickUpCardView"
+         app:layout_constraintStart_toEndOf="@+id/requestRide_boxImageView"
+         app:layout_constraintTop_toBottomOf="@+id/requestRide_pickUpCardView">
 
           <fragment
-              android:id="@+id/fragment_request_trip_end_point"
+              android:id="@+id/requestRide_dropOffAutocompleteFragment"
               android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
               android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="32dp"
-              app:layout_constraintEnd_toEndOf="@+id/fragment_request_trip_start_point"
-              app:layout_constraintStart_toStartOf="@+id/fragment_request_trip_start_point"
-              app:layout_constraintTop_toBottomOf="@+id/fragment_request_trip_start_point" />
+              android:layout_height="wrap_content" />
+     </androidx.cardview.widget.CardView>
 
-          <Button
-              android:id="@+id/framgnet_request_trip_RequestButton"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="128dp"
-              android:text="@string/request_trip"
-              app:layout_constraintEnd_toEndOf="parent"
-              app:layout_constraintStart_toStartOf="parent"
-              app:layout_constraintTop_toBottomOf="@+id/fragment_request_trip_end_point" />
-     </androidx.constraintlayout.widget.ConstraintLayout>
-
-</FrameLayout>
+     <Button
+         android:id="@+id/requestRide_requestTripButton"
+         android:layout_width="0dp"
+         android:layout_height="wrap_content"
+         android:layout_marginStart="32dp"
+         android:layout_marginEnd="32dp"
+         android:layout_marginBottom="32dp"
+         android:background="@drawable/rounded_button_primary_color"
+         android:text="@string/requestTrip"
+         android:textColor="@android:color/background_light"
+         android:textSize="24sp"
+         app:layout_constraintBottom_toBottomOf="parent"
+         app:layout_constraintEnd_toEndOf="parent"
+         app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

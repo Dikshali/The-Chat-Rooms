@@ -6,26 +6,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.app.thechatrooms.MapsActivity;
 import com.app.thechatrooms.R;
-import com.app.thechatrooms.models.Drivers;
 import com.app.thechatrooms.models.Messages;
-import com.app.thechatrooms.models.PlaceLatitueLongitude;
-import com.app.thechatrooms.models.Trips;
+import com.app.thechatrooms.models.PlaceLatitudeLongitude;
 import com.app.thechatrooms.models.User;
 import com.app.thechatrooms.ui.messages.MyMessageViewHolder;
 import com.app.thechatrooms.ui.messages.MyTripInProgressViewHolder;
@@ -34,7 +27,6 @@ import com.app.thechatrooms.ui.messages.TheirMessageViewHolder;
 import com.app.thechatrooms.ui.messages.TheirTripInProgressViewHolder;
 import com.app.thechatrooms.ui.messages.TheirTripRequestViewHolder;
 import com.app.thechatrooms.utilities.Parameters;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -58,7 +50,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private PrettyTime pt = new PrettyTime();
     private DatabaseReference myRef, tripRef;
     private FirebaseDatabase firebaseDatabase;
-    private PlaceLatitueLongitude startPoint, endPoint;
+    private PlaceLatitudeLongitude startPoint, endPoint;
     private LocationManager lm;
     private Location location;
 
@@ -235,8 +227,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         viewHolder.getAccept().setClickable(false);
                     }
                 }
-                startPoint = dataSnapshot.child("startPoint").getValue(PlaceLatitueLongitude.class);
-                endPoint = dataSnapshot.child("endPoint").getValue(PlaceLatitueLongitude.class);
+                startPoint = dataSnapshot.child("startPoint").getValue(PlaceLatitudeLongitude.class);
+                endPoint = dataSnapshot.child("endPoint").getValue(PlaceLatitudeLongitude.class);
             }
 
             @Override

@@ -248,6 +248,7 @@ public class SignUpActivity extends AppCompatActivity {
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor editor = preferences.edit();
             editor.putString(Parameters.USER_ID, userId);
+            editor.apply();
             Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
             startActivity(intent);
         }

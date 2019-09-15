@@ -8,7 +8,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.app.thechatrooms.R;
 import com.app.thechatrooms.models.Drivers;
-import com.app.thechatrooms.models.PlaceLatitueLongitude;
+import com.app.thechatrooms.models.PlaceLatitudeLongitude;
 import com.app.thechatrooms.utilities.Parameters;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -19,7 +19,7 @@ public class TripLiveLocationFragment extends FragmentActivity implements OnMapR
 
     private GoogleMap mMap;
     Drivers drivers;
-    PlaceLatitueLongitude startPoint;
+    PlaceLatitudeLongitude startPoint;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -28,7 +28,7 @@ public class TripLiveLocationFragment extends FragmentActivity implements OnMapR
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_trip_live_location_map);
         Intent intent = getIntent();
         drivers = (Drivers) intent.getSerializableExtra(Parameters.DRIVER_ACCEPTED);
-        startPoint = (PlaceLatitueLongitude) intent.getSerializableExtra(Parameters.START_POINT);
+        startPoint = (PlaceLatitudeLongitude) intent.getSerializableExtra(Parameters.START_POINT);
 
         mapFragment.getMapAsync(this);
 

@@ -4,4 +4,8 @@
         android:id="@+id/action_showMembers"
         android:title="@string/action_showMembers"
         android:orderInCategory="101"/>
+    <item
+        android:id="@+id/action_requestTrip"
+        android:title="@string/action_requestTrip"
+        android:orderInCategory="102"/>
 </menu>

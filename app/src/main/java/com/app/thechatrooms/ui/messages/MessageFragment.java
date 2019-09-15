@@ -20,7 +20,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -29,28 +28,22 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.app.thechatrooms.MapsActivity;
 import com.app.thechatrooms.R;
-import com.app.thechatrooms.adapters.GroupOnlineMembersAdapter;
 import com.app.thechatrooms.adapters.MessageAdapter;
 import com.app.thechatrooms.models.Drivers;
-import com.app.thechatrooms.models.GroupOnlineUsers;
 import com.app.thechatrooms.models.Messages;
-import com.app.thechatrooms.models.PlaceLatitueLongitude;
+import com.app.thechatrooms.models.PlaceLatitudeLongitude;
 import com.app.thechatrooms.models.User;
 import com.app.thechatrooms.ui.trips.PickUpOffersFragment;
 import com.app.thechatrooms.ui.trips.RequestTripFragment;
 import com.app.thechatrooms.ui.trips.TripLiveLocationFragment;
 import com.app.thechatrooms.utilities.Parameters;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.Place;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -62,7 +55,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -82,9 +74,7 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
     LocationListener locationListener;
     private FirebaseAuth mAuth;
     Location location;
-
     private String groupId;
-    private LinkedHashMap<String, GroupOnlineUsers> hashMap = new LinkedHashMap<>();
 
     public MessageFragment() {
         // Required empty public constructor
@@ -97,7 +87,6 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
         View view = inflater.inflate(R.layout.fragment_message, container, false);
         EditText editText = view.findViewById(R.id.fragment_chats_message_EditText);
         ImageButton sendButton = view.findViewById(R.id.fragment_chats_send_button);
-        Button requestTrip = view.findViewById(R.id.fragment_message_requet_trip_button);
 
         mAuth = FirebaseAuth.getInstance();
         groupId = getArguments().getString("GroupID");
@@ -140,22 +129,6 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
             }
         });
 
-        requestTrip.setOnClickListener(view1 -> {
-            Intent intent = new Intent(getActivity(), RequestTripFragment.class);
-            intent.putExtra(Parameters.GROUP_ID, groupId);
-            intent.putExtra(Parameters.USER_ID, user);
-            startActivityForResult(intent, TRIPREQUEST);
-//            RequestTripFragment requestTripFragment = new RequestTripFragment();
-//            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-//            Bundle bundle = new Bundle();
-//            bundle.putString(Parameters.GROUP_ID, groupId);
-//            bundle.putSerializable(Parameters.USER_ID, user);
-//            requestTripFragment.setArguments(bundle);
-//            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//            fragmentTransaction.replace(R.id.nav_host_fragment, requestTripFragment, "Chat Fragment");
-//            fragmentTransaction.addToBackStack(null);
-//            fragmentTransaction.commit();
-        });
         return view;
     }
 
@@ -172,18 +145,27 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        FragmentManager manager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = manager.beginTransaction();
         switch (item.getItemId()) {
             case R.id.action_createGroup:
                 return false;
             case R.id.action_showMembers:
                 Log.i("item id ", item.getItemId() + "");
-                FragmentManager manager = getFragmentManager();
                 DialogFragment fragment = new ShowMembersFragment();
                 Bundle bundle = new Bundle();
-                bundle.putString(Parameters.SHOW_MEMBERS, "chatRooms/groupChatRoom/" + groupId + "/membersListWithOnlineStatus");
+                bundle.putString(Parameters.SHOW_MEMBERS,"chatRooms/groupChatRoom/"+groupId+"/membersListWithOnlineStatus");
                 fragment.setArguments(bundle);
-                fragment.show(manager, "show_members");
+                fragment.show(manager,"show_members");
                 return true;
+            case R.id.action_requestTrip:
+                RequestTripFragment requestTripFragment = new RequestTripFragment();
+                Bundle requestRideBundle = new Bundle();
+                requestRideBundle.putSerializable(Parameters.USER_ID, user);
+                requestRideBundle.putString(Parameters.GROUP_ID, groupId);
+                requestTripFragment.setArguments(requestRideBundle);
+                fragmentTransaction.replace(R.id.nav_host_fragment,requestTripFragment).addToBackStack(null);
+                fragmentTransaction.commit();
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -203,21 +185,10 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
 
     @Override
     public void viewPickUpOffers(String messageId) {
-//        PickUpOffersFragment pickUpOffersFragment = new PickUpOffersFragment();
-//        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-//        Bundle bundle = new Bundle();
-//        bundle.putString(Parameters.MESSAGE_ID,messageId);
-//        bundle.putSerializable(Parameters.USER_ID, user);
-//        pickUpOffersFragment.setArguments(bundle);
         Intent intent = new Intent(getActivity(), PickUpOffersFragment.class);
         intent.putExtra(Parameters.GROUP_ID, groupId);
         intent.putExtra(Parameters.MESSAGE_ID, messageId);
-
         startActivityForResult(intent, PICKUPOFFERS);
-//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//        fragmentTransaction.replace(R.id.nav_host_fragment, pickUpOffersFragment, "Chat Fragment");
-//        fragmentTransaction.addToBackStack(null);
-//        fragmentTransaction.commit();
     }
 
     @Override
@@ -258,8 +229,8 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
         else{
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100,10,locationListener);
         }
-        PlaceLatitueLongitude placeLatitueLongitude = new PlaceLatitueLongitude(latlng.latitude, latlng.longitude);
-        Drivers drivers = new Drivers(user.getId(), user.getFirstName(), placeLatitueLongitude);
+        PlaceLatitudeLongitude placeLatitudeLongitude = new PlaceLatitudeLongitude(latlng.latitude, latlng.longitude);
+        Drivers drivers = new Drivers(user.getId(), user.getFirstName(), placeLatitudeLongitude);
         tripRef.child(Parameters.DRIVERS).child(drivers.getDriverId()).setValue(drivers);
 
     }
@@ -300,7 +271,7 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
 
     }
 
-    PlaceLatitueLongitude startPoint = null;
+    PlaceLatitudeLongitude startPoint = null;
     Drivers drivers = null;
 
     @Override
@@ -308,13 +279,11 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
         tripRef = firebaseDatabase.getReference("chatRooms/trips/" + messageId );
 
         Intent intent = new Intent(getActivity(), TripLiveLocationFragment.class);
-//        intent.putExtra(Parameters.GROUP_ID, groupId);
-//        intent.putExtra(Parameters.MESSAGE_ID, messageId);
 
         tripRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                startPoint = dataSnapshot.child(Parameters.START_POINT).getValue(PlaceLatitueLongitude.class);
+                startPoint = dataSnapshot.child(Parameters.START_POINT).getValue(PlaceLatitudeLongitude.class);
                 drivers = dataSnapshot.child(Parameters.DRIVER_ACCEPTED).getValue(Drivers.class);
                 Log.d("Drivers", dataSnapshot.child(Parameters.DRIVER_ACCEPTED).toString());
                 intent.putExtra(Parameters.DRIVER_ACCEPTED ,drivers);
@@ -327,9 +296,6 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
 
             }
         });
-
-
-        //tripRef.child(Parameters.START_POINT).child(Parameters.LATITUDE)
     }
 
     @Override
@@ -347,26 +313,17 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
                 Double startPointLong = (Double) dataSnapshot.child(Parameters.START_POINT).child(Parameters.LONGITUDE).getValue();
                 Double endPointLat =(Double)  dataSnapshot.child("endPoint").child(Parameters.LATITUDE).getValue();
                 Double endPointLong = (Double) dataSnapshot.child("endPoint").child(Parameters.LONGITUDE).getValue();
-//                PlaceLatitueLongitude startPoint = (PlaceLatitueLongitude) dataSnapshot.child(Parameters.START_POINT).getValue();
-//                PlaceLatitueLongitude endPoint = (PlaceLatitueLongitude) dataSnapshot.child("endPoint").getValue();
                 String riderId = (String) dataSnapshot.child("riderId").getValue();
 
                 try {
                     addresses = geocoder.getFromLocation(startPointLat, startPointLong, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
                     endAddresses = geocoder.getFromLocation(endPointLat, endPointLong, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-                    String sAdress = addresses.get(0).getAddressLine(0);
+                    String sAddress = addresses.get(0).getAddressLine(0);
                     String eAddress = endAddresses.get(0).getAddressLine(0);
-                    showDialog(sAdress, eAddress, riderId);
+                    showDialog(sAddress, eAddress, riderId);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-//                String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-//                String city = addresses.get(0).getLocality();
-//                String state = addresses.get(0).getAdminArea();
-//                String country = addresses.get(0).getCountryName();
-//                String postalCode = addresses.get(0).getPostalCode();
-//                String knownName = addresses.get(0).getFeatureName();
             }
 
             @Override
@@ -386,7 +343,6 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
                 String profileImage = (String) dataSnapshot.child("userProfileImageUrl").getValue();
                 DialogFragment newFragment = TheirTripRequestDialog.newInstance(name, start, end, profileImage);
                 newFragment.show(getFragmentManager(), "dialog");
-
             }
 
             @Override
