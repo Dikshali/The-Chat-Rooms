@@ -16,7 +16,7 @@ import com.google.android.gms.maps.model.LatLng;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private PlaceLatitudeLongitude startPoint, endPoint;
+    private PlaceLatitudeLongitude startPoint, endPoint, driversCurrentLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +27,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent intent = getIntent();
         startPoint = (PlaceLatitudeLongitude) intent.getSerializableExtra(Parameters.START_POINT);
         endPoint = (PlaceLatitudeLongitude) intent.getSerializableExtra(Parameters.END_POINT);
+        driversCurrentLocation = (PlaceLatitudeLongitude) intent.getSerializableExtra(Parameters.DRIVERS);
         mapFragment.getMapAsync(this);
     }
 
@@ -45,18 +46,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         if(endPoint!=null && startPoint!=null){
-            StringBuilder sb = new StringBuilder();
-            sb.append("https://maps.googleapis.com/maps/api/directions/json?");
-            sb.append("origin="+startPoint.getLatitude()+","+ startPoint.getLongitude());
-            sb.append("&destination="+endPoint.getLatitude()+","+ endPoint.getLongitude());
-            sb.append("&key="+"AIzaSyCjQlEN9SKDCtC30zy7grp-lyhPjEv792Q");
-
+            StringBuilder sourceToDestination = new StringBuilder();
+            sourceToDestination.append("https://maps.googleapis.com/maps/api/directions/json?");
+            sourceToDestination.append("origin="+driversCurrentLocation.getLatitude()+","+ driversCurrentLocation.getLongitude());
+            sourceToDestination.append("&destination="+endPoint.getLatitude()+","+ endPoint.getLongitude());
+            sourceToDestination.append("&waypoints=via:"+startPoint.getLatitude()+","+startPoint.getLongitude());
+            /*sourceToDestination.append("origin="+startPoint.getLatitude()+","+ startPoint.getLongitude());
+            sourceToDestination.append("&destination="+endPoint.getLatitude()+","+ endPoint.getLongitude());
+            sourceToDestination.append("&waypoints=via:"+driversCurrentLocation.getLatitude()+","+driversCurrentLocation.getLongitude());*/
+            sourceToDestination.append("&key="+getResources().getString(R.string.google_api_key));
             GetDirectionData getDirectionData = new GetDirectionData(getApplicationContext());
-            Object[] data = new Object[4];
+            Object[] data = new Object[5];
             data[0] = mMap;
-            data[1] = sb.toString();
+            data[1] = sourceToDestination.toString();
             data[2] = new LatLng(startPoint.getLatitude(), startPoint.getLongitude());//start
             data[3] = new LatLng(endPoint.getLatitude(), endPoint.getLongitude());//end
+            data[4] = new LatLng(driversCurrentLocation.getLatitude(), driversCurrentLocation.getLongitude());
+            //data[5] = driverToSource.toString();
 
             getDirectionData.execute(data);
         }

@@ -10,7 +10,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,6 +32,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.app.thechatrooms.MapsActivity;
 import com.app.thechatrooms.R;
 import com.app.thechatrooms.adapters.MessageAdapter;
 import com.app.thechatrooms.models.Drivers;
@@ -44,7 +44,13 @@ import com.app.thechatrooms.ui.trips.PickUpOffersFragment;
 import com.app.thechatrooms.ui.trips.RequestTripFragment;
 import com.app.thechatrooms.ui.trips.TripLiveLocationFragment;
 import com.app.thechatrooms.utilities.Parameters;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -76,6 +82,14 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
     private FirebaseAuth mAuth;
     Location location;
     private String groupId;
+
+
+    private double longitude, latitude;
+    private FusedLocationProviderClient mFusedLocationClient;
+    private LocationRequest locationRequest;
+    private LocationCallback locationCallback;
+    private String messageId="";
+    private PlaceLatitudeLongitude driversCurrentLocation;
 
     public MessageFragment() {
         // Required empty public constructor
@@ -194,46 +208,97 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
 
     @Override
     public void setDriversLocation(User user, String messageId) {
+        this.messageId = messageId;
         tripRef = firebaseDatabase.getReference("chatRooms/trips/" + messageId );
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(20 * 1000);
+        locationRequest.setFastestInterval(20 * 1000);
 
-        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        locationListener = new LocationListener() {
+        locationCallback = new LocationCallback() {
             @Override
-            public void onLocationChanged(Location location) {
-                latlng = new LatLng(location.getLatitude(), location.getLongitude());
-            }
-
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String s) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String s) {
-
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    if (location != null) {
+                        latitude = location.getLatitude();
+                        longitude = location.getLongitude();
+                        PlaceLatitudeLongitude placeLatitueLongitude = new PlaceLatitudeLongitude(latitude, longitude);
+                        Drivers drivers = new Drivers(user.getId(), user.getFirstName(), placeLatitueLongitude);
+                        tripRef.child(Parameters.DRIVERS).child(drivers.getDriverId()).setValue(drivers);
+                    }
+                }
             }
         };
-        if (getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && getActivity().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            //Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 100);
+        }else{
+            mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        latitude = location.getLatitude();
+                        longitude = location.getLongitude();
+                        PlaceLatitudeLongitude placeLatitueLongitude = new PlaceLatitudeLongitude(latitude, longitude);
+                        Drivers drivers = new Drivers(user.getId(), user.getFirstName(), placeLatitueLongitude);
+                        tripRef.child(Parameters.DRIVERS).child(drivers.getDriverId()).setValue(drivers);
+                    }
+                }
+            });
+        }
+    }
 
-            return;
-        }
-        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        if (location!=null){
-            latlng = new LatLng(location.getLatitude(), location.getLongitude());
-        }
-        else{
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100,10,locationListener);
-        }
-        PlaceLatitudeLongitude placeLatitudeLongitude = new PlaceLatitudeLongitude(latlng.latitude, latlng.longitude);
-        Drivers drivers = new Drivers(user.getId(), user.getFirstName(), placeLatitudeLongitude);
-        tripRef.child(Parameters.DRIVERS).child(drivers.getDriverId()).setValue(drivers);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 100: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            if (location != null) {
+                                latitude = location.getLatitude();
+                                longitude = location.getLongitude();
+                                tripRef = firebaseDatabase.getReference("chatRooms/trips/" + messageId );
+                                PlaceLatitudeLongitude placeLatitueLongitude = new PlaceLatitudeLongitude(latitude, longitude);
+                                Drivers drivers = new Drivers(user.getId(), user.getFirstName(), placeLatitueLongitude);
+                                tripRef.child(Parameters.DRIVERS).child(drivers.getDriverId()).setValue(drivers);
+                            }
+                        }
+                    });
+                } else {
+                    Toast.makeText(getActivity(), "Permission denied", Toast.LENGTH_SHORT).show();
+                }
+            }
+            case 101:{
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            if (location != null) {
+                                driversCurrentLocation = new PlaceLatitudeLongitude(location.getLatitude(), location.getLongitude());
+                                Intent intent = new Intent(getActivity(), MapsActivity.class);
+                                intent.putExtra(Parameters.START_POINT, startPoint);
+                                intent.putExtra(Parameters.END_POINT, endPoint);
+                                intent.putExtra(Parameters.DRIVERS, driversCurrentLocation);
+                                startActivity(intent);
+                            }
+                        }
+                    });
+                } else {
+                    Toast.makeText(getActivity(), "Permission denied", Toast.LENGTH_SHORT).show();
+                }
 
+            }
+        }
     }
 
     @Override
@@ -272,7 +337,7 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
 
     }
 
-    PlaceLatitudeLongitude startPoint = null;
+    PlaceLatitudeLongitude startPoint = null, endPoint = null;
     Drivers drivers = null;
 
     @Override
@@ -334,7 +399,53 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
 
             }
         });
+    }
 
+    @Override
+    public void openMap(PlaceLatitudeLongitude startPoint, PlaceLatitudeLongitude endPoint) {
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(20 * 1000);
+        locationRequest.setFastestInterval(20 * 1000);
+        this.startPoint = startPoint;
+        this.endPoint = endPoint;
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    if (location != null) {
+                        driversCurrentLocation = new PlaceLatitudeLongitude(location.getLatitude(), location.getLongitude());
+                        Intent intent = new Intent(getActivity(), MapsActivity.class);
+                        intent.putExtra(Parameters.START_POINT, startPoint);
+                        intent.putExtra(Parameters.END_POINT, endPoint);
+                        intent.putExtra(Parameters.DRIVERS, driversCurrentLocation);
+                        startActivity(intent);
+                    }
+                }
+            }
+        };
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(),Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 101);
+        }else{
+            mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        driversCurrentLocation = new PlaceLatitudeLongitude(location.getLatitude(), location.getLongitude());
+                        Intent intent = new Intent(getActivity(), MapsActivity.class);
+                        intent.putExtra(Parameters.START_POINT, startPoint);
+                        intent.putExtra(Parameters.END_POINT, endPoint);
+                        intent.putExtra(Parameters.DRIVERS, driversCurrentLocation);
+                        startActivity(intent);
+                    }
+                }
+            });
+        }
 
     }
 }

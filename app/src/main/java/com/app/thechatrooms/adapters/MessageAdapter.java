@@ -1,11 +1,7 @@
 package com.app.thechatrooms.adapters;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
 import android.location.LocationManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,7 +11,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.app.thechatrooms.MapsActivity;
 import com.app.thechatrooms.R;
 import com.app.thechatrooms.models.Messages;
 import com.app.thechatrooms.models.PlaceLatitudeLongitude;
@@ -51,30 +46,17 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private DatabaseReference myRef, tripRef;
     private FirebaseDatabase firebaseDatabase;
     private PlaceLatitudeLongitude startPoint, endPoint;
-    private LocationManager lm;
-    private Location location;
+    private Activity activity;
 
     public MessageAdapter(User user, String groupId, ArrayList<Messages> messagesArrayList, Activity a, Context context, MessageInterface messageInterface) {
         this.messagesArrayList = messagesArrayList;
         this.groupId = groupId;
         this.user = user;
         this.context = context;
+        this.activity = a;
         this.messageInterface = messageInterface;
         firebaseDatabase = FirebaseDatabase.getInstance();
         myRef = firebaseDatabase.getReference("chatRooms/messages/" + this.groupId);
-
-        lm = (LocationManager) a.getSystemService(Context.LOCATION_SERVICE);
-        if (a.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && a.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    Activity#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for Activity#requestPermissions for more details.
-            return;
-        }
-        location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     }
 
     @Override
@@ -213,7 +195,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private void configureTheirTripRequestViewHolder(TheirTripRequestViewHolder viewHolder, int position) throws ParseException {
         Messages messages = messagesArrayList.get(position);
-
         viewHolder.getTheirRequestMessage().setText(messages.getMessage());
         viewHolder.getSenderName().setText(messages.getCreatedByName());
         tripRef = firebaseDatabase.getReference("chatRooms/trips/" + messages.getMessageId());
@@ -246,16 +227,14 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         viewHolder.getOpenInMaps().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, MapsActivity.class);
-                intent.putExtra(Parameters.START_POINT, startPoint);
-                intent.putExtra(Parameters.END_POINT, endPoint);
-                context.startActivity(intent);
+                messageInterface.openMap(startPoint, endPoint);
             }
         });
 
         Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(messages.getCreatedOn());
         viewHolder.getTheirTripRequestTime().setText(pt.format(date));
     }
+
 
     private void configureMyTextMessageViewHolder(MyMessageViewHolder viewHolder, int position) throws ParseException {
         Messages messages = messagesArrayList.get(position);
@@ -299,6 +278,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         void setDriversLocation(User drivers, String messageId);
         void viewDriversProgress(String messageId);
         void theirTripRequestInfo(String messageId);
+        void openMap(PlaceLatitudeLongitude startPoint, PlaceLatitudeLongitude endPoint);
     }
 
 }
