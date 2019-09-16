@@ -1,27 +1,16 @@
 package com.app.thechatrooms.ui.trips;
 
-
-import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
-import android.location.LocationListener;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-
-import android.os.PersistableBundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.app.thechatrooms.R;
 import com.app.thechatrooms.models.Drivers;
-import com.app.thechatrooms.models.Messages;
 import com.app.thechatrooms.models.PlaceLatitueLongitude;
 import com.app.thechatrooms.models.User;
 import com.app.thechatrooms.utilities.Parameters;
@@ -40,9 +29,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.

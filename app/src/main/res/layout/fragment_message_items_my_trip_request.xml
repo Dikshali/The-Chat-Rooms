@@ -51,9 +51,7 @@
         android:layout_below="@+id/myTripRequest_messageTextView"
         android:layout_marginTop="3dp"
         android:layout_marginEnd="3dp"
-        android:layout_toStartOf="@+id/myTripRequest_drivers"
-        android:background="@null"
-        app:srcCompat="@drawable/baseline_info_24" />
+        android:layout_toStartOf="@+id/myTripRequest_drivers" />
 
     <TextView
         android:id="@+id/myTripRequest_likeCountTextView"
