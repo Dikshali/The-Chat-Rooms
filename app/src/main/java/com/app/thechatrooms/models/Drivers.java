@@ -4,10 +4,10 @@ import java.io.Serializable;
 
 public class Drivers implements Serializable {
     private String driverId, driverName;
-    private PlaceLatitueLongitude driverLocation;
+    private PlaceLatitudeLongitude driverLocation;
 
     public Drivers(){}
-    public Drivers(String driverId, String driverName, PlaceLatitueLongitude driverLocation) {
+    public Drivers(String driverId, String driverName, PlaceLatitudeLongitude driverLocation) {
         this.driverId = driverId;
         this.driverName = driverName;
         this.driverLocation = driverLocation;
@@ -29,11 +29,11 @@ public class Drivers implements Serializable {
         this.driverName = driverName;
     }
 
-    public PlaceLatitueLongitude getDriverLocation() {
+    public PlaceLatitudeLongitude getDriverLocation() {
         return driverLocation;
     }
 
-    public void setDriverLocation(PlaceLatitueLongitude driverLocation) {
+    public void setDriverLocation(PlaceLatitudeLongitude driverLocation) {
         this.driverLocation = driverLocation;
     }
 }

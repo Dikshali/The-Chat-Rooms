@@ -48,4 +48,9 @@
     <string name="action_showMembers">Show Members</string>
     <string name="title_activity_maps">Map</string>
     <string name="request_trip">Request Trip</string>
+    <string name="action_requestTrip">Request Trip</string>
+    <string name="requestTrip">Request Trip</string>
+    <string name="dot">dot</string>
+    <string name="box">box</string>
+    <string name="menu_myTrips">My Trips</string>
 </resources>

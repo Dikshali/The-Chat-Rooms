@@ -28,10 +28,6 @@ public final class Parameters {
 
     public static final String RIDERS = "riders";
 
-    public static final String TRIP_STATUS_START = "tripStart";
-    public static final String TRIP_STATUS_PROGRESS = "tripProgress";
-    public static final String TRIP_STATUS_ENG = "tripEnd";
-
     public static final String MESSAGE_ID = "messageId";
     public static final String DRIVERS = "drivers";
 

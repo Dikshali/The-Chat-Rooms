@@ -7,6 +7,8 @@ import android.os.AsyncTask;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -29,7 +31,7 @@ import java.util.ArrayList;
 public class GetDirectionData extends AsyncTask<Object, String, String > {
     GoogleMap mMap;
     String url;
-    LatLng start, end;
+    LatLng start, end, driversLocation;
     HttpURLConnection httpURLConnection = null;
     String data="";
     InputStream inputStream =null;
@@ -43,7 +45,7 @@ public class GetDirectionData extends AsyncTask<Object, String, String > {
         url = (String) objects[1];
         start = (LatLng) objects[2];
         end = (LatLng) objects[3];
-
+        driversLocation = (LatLng) objects[4];
         try {
             URL myUrl = new URL(url);
             httpURLConnection = (HttpURLConnection) myUrl.openConnection();
@@ -76,10 +78,7 @@ public class GetDirectionData extends AsyncTask<Object, String, String > {
         JSONObject jsonObject = null;
         try {
             jsonObject = new JSONObject(s);
-
             JSONArray jsonArray = jsonObject.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps");
-
-
             JSONObject jsonBound = jsonObject.getJSONArray("routes").getJSONObject(0).getJSONObject("bounds");
             JSONObject jsonSouthWest = jsonBound.getJSONObject("southwest");
             JSONObject jsonNorthEast = jsonBound.getJSONObject("northeast");
@@ -111,8 +110,11 @@ public class GetDirectionData extends AsyncTask<Object, String, String > {
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
             builder.include(bounds.get(0));
             builder.include(bounds.get(1));
+
             mMap.addMarker(new MarkerOptions().position(start)).setTitle("Source");
-            mMap.addMarker(new MarkerOptions().position(end).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))).setTitle("Destination");
+            mMap.addMarker(new MarkerOptions().position(end)).setTitle("Destination");
+            mMap.addMarker(new MarkerOptions().position(driversLocation).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))).setTitle("You are here");
+            //mMap.addMarker(new MarkerOptions().position(end).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))).setTitle("Destination");
             mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 200));
 
         } catch (JSONException e) {

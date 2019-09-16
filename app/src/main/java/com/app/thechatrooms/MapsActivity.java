@@ -1,25 +1,22 @@
 package com.app.thechatrooms;
 
-import androidx.fragment.app.FragmentActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.app.thechatrooms.models.Drivers;
-import com.app.thechatrooms.models.PlaceLatitueLongitude;
+import androidx.fragment.app.FragmentActivity;
+
+import com.app.thechatrooms.models.PlaceLatitudeLongitude;
 import com.app.thechatrooms.ui.trips.GetDirectionData;
 import com.app.thechatrooms.utilities.Parameters;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private PlaceLatitueLongitude startPoint, endPoint;
+    private PlaceLatitudeLongitude startPoint, endPoint, driversCurrentLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,10 +25,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.fragment_request_trip_map);
         Intent intent = getIntent();
-        //drivers = (Drivers) intent.getSerializableExtra(Parameters.DRIVER_ACCEPTED);
-        //startPoint = (PlaceLatitueLongitude) intent.getSerializableExtra(Parameters.START_POINT);
-        startPoint = (PlaceLatitueLongitude) intent.getSerializableExtra(Parameters.START_POINT);
-        endPoint = (PlaceLatitueLongitude) intent.getSerializableExtra(Parameters.END_POINT);
+        startPoint = (PlaceLatitudeLongitude) intent.getSerializableExtra(Parameters.START_POINT);
+        endPoint = (PlaceLatitudeLongitude) intent.getSerializableExtra(Parameters.END_POINT);
+        driversCurrentLocation = (PlaceLatitudeLongitude) intent.getSerializableExtra(Parameters.DRIVERS);
         mapFragment.getMapAsync(this);
     }
 
@@ -50,26 +46,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         if(endPoint!=null && startPoint!=null){
-            //double destinationLat = startPoint.getLatitude(), destinationLong = startPoint.getLongitude();
-            //double startLat = endPoint.getLatitude(), startLong = endPoint.getLongitude();
-            StringBuilder sb = new StringBuilder();
-            sb.append("https://maps.googleapis.com/maps/api/directions/json?");
-            sb.append("origin="+startPoint.getLatitude()+","+ startPoint.getLongitude());
-            sb.append("&destination="+endPoint.getLatitude()+","+ endPoint.getLongitude());
-            sb.append("&key="+"AIzaSyCjQlEN9SKDCtC30zy7grp-lyhPjEv792Q");
-
+            StringBuilder sourceToDestination = new StringBuilder();
+            sourceToDestination.append("https://maps.googleapis.com/maps/api/directions/json?");
+            sourceToDestination.append("origin="+driversCurrentLocation.getLatitude()+","+ driversCurrentLocation.getLongitude());
+            sourceToDestination.append("&destination="+endPoint.getLatitude()+","+ endPoint.getLongitude());
+            sourceToDestination.append("&waypoints=via:"+startPoint.getLatitude()+","+startPoint.getLongitude());
+            /*sourceToDestination.append("origin="+startPoint.getLatitude()+","+ startPoint.getLongitude());
+            sourceToDestination.append("&destination="+endPoint.getLatitude()+","+ endPoint.getLongitude());
+            sourceToDestination.append("&waypoints=via:"+driversCurrentLocation.getLatitude()+","+driversCurrentLocation.getLongitude());*/
+            sourceToDestination.append("&key="+getResources().getString(R.string.google_api_key));
             GetDirectionData getDirectionData = new GetDirectionData(getApplicationContext());
-            Object[] data = new Object[4];
+            Object[] data = new Object[5];
             data[0] = mMap;
-            data[1] = sb.toString();
+            data[1] = sourceToDestination.toString();
             data[2] = new LatLng(startPoint.getLatitude(), startPoint.getLongitude());//start
             data[3] = new LatLng(endPoint.getLatitude(), endPoint.getLongitude());//end
+            data[4] = new LatLng(driversCurrentLocation.getLatitude(), driversCurrentLocation.getLongitude());
+            //data[5] = driverToSource.toString();
 
             getDirectionData.execute(data);
         }
-        // Add a marker in Sydney and move the camera
-        /*LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
     }
 }

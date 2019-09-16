@@ -166,21 +166,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 drawer.closeDrawer(GravityCompat.START);
             }
             fragmentManager.popBackStack();
-            //super.onBackPressed();
         }else{
             super.onBackPressed();
         }
-       /* if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }*/
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d("Finale", "hey");
         myRef = database.getReference("chatRooms/userProfiles/");
         myRef.child(userId).child("online").setValue(false);
 

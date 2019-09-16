@@ -1,31 +1,19 @@
 package com.app.thechatrooms.adapters;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.app.thechatrooms.MapsActivity;
 import com.app.thechatrooms.R;
-import com.app.thechatrooms.models.Drivers;
 import com.app.thechatrooms.models.Messages;
-import com.app.thechatrooms.models.PlaceLatitueLongitude;
-import com.app.thechatrooms.models.Trips;
+import com.app.thechatrooms.models.PlaceLatitudeLongitude;
 import com.app.thechatrooms.models.User;
 import com.app.thechatrooms.ui.messages.MyMessageViewHolder;
 import com.app.thechatrooms.ui.messages.MyTripInProgressViewHolder;
@@ -34,7 +22,6 @@ import com.app.thechatrooms.ui.messages.TheirMessageViewHolder;
 import com.app.thechatrooms.ui.messages.TheirTripInProgressViewHolder;
 import com.app.thechatrooms.ui.messages.TheirTripRequestViewHolder;
 import com.app.thechatrooms.utilities.Parameters;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -58,31 +45,18 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private PrettyTime pt = new PrettyTime();
     private DatabaseReference myRef, tripRef;
     private FirebaseDatabase firebaseDatabase;
-    private PlaceLatitueLongitude startPoint, endPoint;
-    private LocationManager lm;
-    private Location location;
+    private PlaceLatitudeLongitude startPoint, endPoint;
+    private Activity activity;
 
     public MessageAdapter(User user, String groupId, ArrayList<Messages> messagesArrayList, Activity a, Context context, MessageInterface messageInterface) {
         this.messagesArrayList = messagesArrayList;
         this.groupId = groupId;
         this.user = user;
         this.context = context;
+        this.activity = a;
         this.messageInterface = messageInterface;
         firebaseDatabase = FirebaseDatabase.getInstance();
         myRef = firebaseDatabase.getReference("chatRooms/messages/" + this.groupId);
-
-        lm = (LocationManager) a.getSystemService(Context.LOCATION_SERVICE);
-        if (a.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && a.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    Activity#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for Activity#requestPermissions for more details.
-            return;
-        }
-        location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     }
 
     @Override
@@ -221,7 +195,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private void configureTheirTripRequestViewHolder(TheirTripRequestViewHolder viewHolder, int position) throws ParseException {
         Messages messages = messagesArrayList.get(position);
-
         viewHolder.getTheirRequestMessage().setText(messages.getMessage());
         viewHolder.getSenderName().setText(messages.getCreatedByName());
         tripRef = firebaseDatabase.getReference("chatRooms/trips/" + messages.getMessageId());
@@ -235,8 +208,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         viewHolder.getAccept().setClickable(false);
                     }
                 }
-                startPoint = dataSnapshot.child("startPoint").getValue(PlaceLatitueLongitude.class);
-                endPoint = dataSnapshot.child("endPoint").getValue(PlaceLatitueLongitude.class);
+                startPoint = dataSnapshot.child("startPoint").getValue(PlaceLatitudeLongitude.class);
+                endPoint = dataSnapshot.child("endPoint").getValue(PlaceLatitudeLongitude.class);
             }
 
             @Override
@@ -254,16 +227,14 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         viewHolder.getOpenInMaps().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, MapsActivity.class);
-                intent.putExtra(Parameters.START_POINT, startPoint);
-                intent.putExtra(Parameters.END_POINT, endPoint);
-                context.startActivity(intent);
+                messageInterface.openMap(startPoint, endPoint);
             }
         });
 
         Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(messages.getCreatedOn());
         viewHolder.getTheirTripRequestTime().setText(pt.format(date));
     }
+
 
     private void configureMyTextMessageViewHolder(MyMessageViewHolder viewHolder, int position) throws ParseException {
         Messages messages = messagesArrayList.get(position);
@@ -307,6 +278,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         void setDriversLocation(User drivers, String messageId);
         void viewDriversProgress(String messageId);
         void theirTripRequestInfo(String messageId);
+        void openMap(PlaceLatitudeLongitude startPoint, PlaceLatitudeLongitude endPoint);
     }
 
 }

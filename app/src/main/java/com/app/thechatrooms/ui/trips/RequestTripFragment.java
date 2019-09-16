@@ -1,41 +1,23 @@
 package com.app.thechatrooms.ui.trips;
 
 
-import android.Manifest;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
 
 import com.app.thechatrooms.R;
 import com.app.thechatrooms.models.Messages;
-import com.app.thechatrooms.models.PlaceLatitueLongitude;
+import com.app.thechatrooms.models.PlaceLatitudeLongitude;
+import com.app.thechatrooms.models.TripStatus;
 import com.app.thechatrooms.models.Trips;
 import com.app.thechatrooms.models.User;
 import com.app.thechatrooms.utilities.Parameters;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
@@ -50,81 +32,83 @@ import java.util.Date;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RequestTripFragment extends FragmentActivity {
+public class RequestTripFragment extends Fragment {
 
-    String TAG = "RequestTrip";
-    static final int TRIPREQUEST=3;
-    User user;
-    String groupId;
+    private static final String TAG = "RequestTripFragment";
     private DatabaseReference myRef, tripRef, addTrip;
+    private User user;
+    private PlaceLatitudeLongitude pickUpPlace, dropOffPlace;
     private FirebaseDatabase firebaseDatabase;
-    private GoogleMap mMap;
-    PlaceLatitueLongitude startPointLocation = new PlaceLatitueLongitude(), endPointLocation = new PlaceLatitueLongitude();
+    private String groupId;
 
     public RequestTripFragment() {
         // Required empty public constructor
     }
 
+
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_request_trip);
-        Intent intent = getIntent();
-        Button request = findViewById(R.id.framgnet_request_trip_RequestButton);
-        Places.initialize(getApplicationContext(), "AIzaSyCjQlEN9SKDCtC30zy7grp-lyhPjEv792Q");
-        groupId = intent.getStringExtra(Parameters.GROUP_ID);
-        user = (User) intent.getSerializableExtra(Parameters.USER_ID);
-        AutocompleteSupportFragment startPoint = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_request_trip_start_point);
-        AutocompleteSupportFragment endPoint = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_request_trip_end_point);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_request_trip, container, false);
         firebaseDatabase = FirebaseDatabase.getInstance();
-        myRef = firebaseDatabase.getReference("chatRooms/messages/"+groupId);
-        startPoint.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
-        endPoint.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
-        startPoint.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+        Places.initialize(getContext(), "AIzaSyCjQlEN9SKDCtC30zy7grp-lyhPjEv792Q");
+        user = (User) getArguments().getSerializable(Parameters.USER_ID);
+        groupId = getArguments().getString(Parameters.GROUP_ID);
+        // Initialize the AutocompleteSupportFragment.
+        AutocompleteSupportFragment pickUpAutocompleteFragment = (AutocompleteSupportFragment)
+                getChildFragmentManager().findFragmentById(R.id.requestRide_pickUpAutocompleteFragment);
+
+        // Specify the types of place data to return.
+        pickUpAutocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG));
+
+        // Set up a PlaceSelectionListener to handle the response.
+        pickUpAutocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
-            public void onPlaceSelected(@NonNull Place place) {
-                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
-                LatLng latLng = place.getLatLng();
-                startPointLocation.setLatitude(latLng.latitude);
-                startPointLocation.setLongitude(latLng.longitude);
-                Log.d("StartPoint", place.getLatLng().latitude + " -- " + place.getLatLng().longitude);
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId() + " , "
+                        + place.getAddress() + " ," + place.getLatLng().toString());
+                pickUpPlace = new PlaceLatitudeLongitude(place.getId(),place.getName(),place.getAddress(),place.getLatLng().latitude,place.getLatLng().longitude);
             }
 
             @Override
-            public void onError(@NonNull Status status) {
+            public void onError(Status status) {
+                // TODO: Handle the error.
                 Log.i(TAG, "An error occurred: " + status);
-                startPointLocation.setLatitude(null);
-                startPointLocation.setLongitude(null);
-
             }
         });
 
-        endPoint.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(@NonNull Place place) {
+        // Initialize the AutocompleteSupportFragment.
+        AutocompleteSupportFragment dropOffAutocompleteFragment = (AutocompleteSupportFragment)
+                getChildFragmentManager().findFragmentById(R.id.requestRide_dropOffAutocompleteFragment);
 
-                LatLng latLng = place.getLatLng();
-                endPointLocation.setLongitude(latLng.longitude);
-                endPointLocation.setLatitude(latLng.latitude);
-                Log.d("EndPoint", latLng.latitude + " -- " + latLng.longitude);
+        // Specify the types of place data to return.
+        dropOffAutocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG));
+
+        // Set up a PlaceSelectionListener to handle the response.
+        dropOffAutocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId() + " , "
+                        + place.getAddress() + " ," + place.getLatLng().toString());
+                dropOffPlace = new PlaceLatitudeLongitude(place.getId(),place.getName(),place.getAddress(),place.getLatLng().latitude,place.getLatLng().longitude);
             }
 
             @Override
-            public void onError(@NonNull Status status) {
-                endPointLocation.setLongitude(null);
-                endPointLocation.setLongitude(null);
-
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i(TAG, "An error occurred: " + status);
             }
         });
-        request.setOnClickListener(view -> {
-            if (startPointLocation.isEmpty() || endPointLocation.isEmpty()) {
-                Log.d("EMPTY", String.valueOf(startPointLocation.isEmpty()) + " --- " + String.valueOf(endPointLocation.isEmpty()));
-                Toast.makeText(getApplicationContext(), "Please select start and end points", Toast.LENGTH_LONG).show();
 
-
+        view.findViewById(R.id.requestRide_requestTripButton).setOnClickListener(view1 -> {
+            if (pickUpPlace == null) {
+                Toast.makeText(getContext(), "Select a Pick Up Place", Toast.LENGTH_LONG).show();
+            } else if (dropOffPlace == null) {
+                Toast.makeText(getContext(), "Select a Drop Off Place", Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(getApplicationContext(), "GOT START AND END POINTS", Toast.LENGTH_LONG).show();
-                firebaseDatabase = FirebaseDatabase.getInstance();
                 myRef = firebaseDatabase.getReference("chatRooms/messages/" + groupId);
                 String messageId = myRef.push().getKey();
                 String createdOn = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(new Date());
@@ -135,14 +119,17 @@ public class RequestTripFragment extends FragmentActivity {
                 addTrip = firebaseDatabase.getReference("chatRooms");
                 String key = addTrip.child(Parameters.ADD_TRIPS).child(Parameters.RIDERS).child(user.getId()).push().getKey();
                 addTrip.child(Parameters.ADD_TRIPS).child(Parameters.RIDERS).child(user.getId()).child(key).setValue(messageId);
-                Trips trips = new Trips(Parameters.TRIP_STATUS_START, user.getId(), null, startPointLocation, endPointLocation, null);
+                Trips trips = new Trips(TripStatus.CREATED, user.getId(), pickUpPlace, dropOffPlace);
                 tripRef.setValue(trips);
-
-                super.onBackPressed();
+                getFragmentManager().popBackStack();
             }
         });
 
+        return view;
+    }
 
-
+    @Override
+    public void onDetach() {
+        super.onDetach();
     }
 }

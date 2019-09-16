@@ -1,39 +1,29 @@
 package com.app.thechatrooms.models;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Trips {
-    private String  tripStatus, riderId, driverId;
-    private PlaceLatitueLongitude startPoint, endPoint;
-    HashMap<String, Drivers> drivers = new HashMap<>();
+    private TripStatus tripStatus;
+    private String riderId, driverId;
+    private PlaceLatitudeLongitude startPoint, endPoint;
+    private HashMap<String, Drivers> drivers = new HashMap<>();
 
     public Trips(){
 
     }
-    public Trips( String tripStatus, String riderId, String driverId, PlaceLatitueLongitude startPoint, PlaceLatitueLongitude endPoint, HashMap<String, Drivers> drivers) {
 
+    public Trips(TripStatus tripStatus, String riderId, PlaceLatitudeLongitude startPoint, PlaceLatitudeLongitude endPoint) {
         this.tripStatus = tripStatus;
         this.riderId = riderId;
-        this.driverId = driverId;
         this.startPoint = startPoint;
         this.endPoint = endPoint;
-        this.drivers = drivers;
     }
 
-//    public String getTripId() {
-//        return tripId;
-//    }
-
-//    public void setTripId(String tripId) {
-//        this.tripId = tripId;
-//    }
-
-    public String getTripStatus() {
+    public TripStatus getTripStatus() {
         return tripStatus;
     }
 
-    public void setTripStatus(String tripStatus) {
+    public void setTripStatus(TripStatus tripStatus) {
         this.tripStatus = tripStatus;
     }
 
@@ -53,19 +43,19 @@ public class Trips {
         this.driverId = driverId;
     }
 
-    public PlaceLatitueLongitude getStartPoint() {
+    public PlaceLatitudeLongitude getStartPoint() {
         return startPoint;
     }
 
-    public void setStartPoint(PlaceLatitueLongitude startPoint) {
+    public void setStartPoint(PlaceLatitudeLongitude startPoint) {
         this.startPoint = startPoint;
     }
 
-    public PlaceLatitueLongitude getEndPoint() {
+    public PlaceLatitudeLongitude getEndPoint() {
         return endPoint;
     }
 
-    public void setEndPoint(PlaceLatitueLongitude endPoint) {
+    public void setEndPoint(PlaceLatitudeLongitude endPoint) {
         this.endPoint = endPoint;
     }
 
