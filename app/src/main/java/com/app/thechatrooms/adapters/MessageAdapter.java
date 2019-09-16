@@ -2,7 +2,6 @@ package com.app.thechatrooms.adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.location.LocationManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.app.thechatrooms.R;
 import com.app.thechatrooms.models.Messages;
 import com.app.thechatrooms.models.PlaceLatitudeLongitude;
+import com.app.thechatrooms.models.Trips;
 import com.app.thechatrooms.models.User;
 import com.app.thechatrooms.ui.messages.MyMessageViewHolder;
 import com.app.thechatrooms.ui.messages.MyTripInProgressViewHolder;
@@ -45,7 +45,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private PrettyTime pt = new PrettyTime();
     private DatabaseReference myRef, tripRef;
     private FirebaseDatabase firebaseDatabase;
-    private PlaceLatitudeLongitude startPoint, endPoint;
     private Activity activity;
 
     public MessageAdapter(User user, String groupId, ArrayList<Messages> messagesArrayList, Activity a, Context context, MessageInterface messageInterface) {
@@ -155,7 +154,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private void configureMyTripRequestViewHolder(MyTripRequestViewHolder viewHolder, int position) throws ParseException {
         Messages messages = messagesArrayList.get(position);
-        viewHolder.getMyTripRequestMessage().setText(messages.getMessage());
+        viewHolder.getMyTripRequestMessage().setText(Parameters.MY_TRIP_TEXT_DISPLAY);
         Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(messages.getCreatedOn());
         viewHolder.getMyTripRequestTime().setText(pt.format(date));
         viewHolder.getInfoButton().setOnClickListener(view -> {
@@ -198,18 +197,23 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         viewHolder.getTheirRequestMessage().setText(messages.getMessage());
         viewHolder.getSenderName().setText(messages.getCreatedByName());
         tripRef = firebaseDatabase.getReference("chatRooms/trips/" + messages.getMessageId());
+        final Trips[] trips = new Trips[1];
         tripRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                if (dataSnapshot.child("drivers").exists()) {
+                if (dataSnapshot.exists()) {
+                    trips[0] = dataSnapshot.getValue(Trips.class);
+                    viewHolder.getTheirRequestMessage().setText(Parameters.THEIR_RIDE_REQUEST + "\n"
+                            + Parameters.PICKUP_DESTINATION + " " + trips[0].getStartPoint().getName() + "\n"
+                            + Parameters.DROPOFF_DESTINATION + " " + trips[0].getEndPoint().getName());
+
                     if (dataSnapshot.child("drivers").child(user.getId()).exists()) {
                         viewHolder.getAccept().setVisibility(View.GONE);
                         viewHolder.getAccept().setClickable(false);
                     }
                 }
-                startPoint = dataSnapshot.child("startPoint").getValue(PlaceLatitudeLongitude.class);
-                endPoint = dataSnapshot.child("endPoint").getValue(PlaceLatitudeLongitude.class);
+
             }
 
             @Override
@@ -224,12 +228,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             messageInterface.theirTripRequestInfo(messages.getMessageId());
         });
 
-        viewHolder.getOpenInMaps().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                messageInterface.openMap(startPoint, endPoint);
-            }
-        });
+        viewHolder.getOpenInMaps().setOnClickListener(view -> messageInterface.openMap(trips[0].getStartPoint(), trips[0].getEndPoint()));
 
         Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(messages.getCreatedOn());
         viewHolder.getTheirTripRequestTime().setText(pt.format(date));
@@ -258,11 +257,12 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         });
     }
 
-    private void deleteTrip(String messageId){
-        tripRef = firebaseDatabase.getReference("chatRooms/trips/" );
+    private void deleteTrip(String messageId) {
+        tripRef = firebaseDatabase.getReference("chatRooms/trips/");
         tripRef.child(messageId).removeValue();
     }
-    private void deleteMessage(String messageId){
+
+    private void deleteMessage(String messageId) {
         myRef.child(messageId).removeValue();
 
     }
@@ -275,9 +275,13 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public interface MessageInterface {
         void viewPickUpOffers(String messageId);
+
         void setDriversLocation(User drivers, String messageId);
+
         void viewDriversProgress(String messageId);
+
         void theirTripRequestInfo(String messageId);
+
         void openMap(PlaceLatitudeLongitude startPoint, PlaceLatitudeLongitude endPoint);
     }
 
