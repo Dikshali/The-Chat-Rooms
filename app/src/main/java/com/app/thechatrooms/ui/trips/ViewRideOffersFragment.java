@@ -82,8 +82,6 @@ public class ViewRideOffersFragment extends Fragment implements OffersAdapter.Of
                     }
 //                    Toast.makeText(getContext(),"DRIVERS HERE", Toast.LENGTH_LONG).show();
                 }
-                else
-                    Toast.makeText(getContext(),"NO OFFERS", Toast.LENGTH_LONG).show();
 //                mapFragment.getMapAsync(PickUpOffersFragment.this::onMapReady);
 //                riderLocation = dataSnapshot.child("startPoint").getValue(PlaceLatitudeLongitude.class);
 
