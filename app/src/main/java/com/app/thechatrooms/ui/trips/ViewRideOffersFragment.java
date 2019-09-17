@@ -17,6 +17,7 @@ import com.app.thechatrooms.R;
 import com.app.thechatrooms.adapters.OffersAdapter;
 import com.app.thechatrooms.models.Drivers;
 import com.app.thechatrooms.models.PlaceLatitudeLongitude;
+import com.app.thechatrooms.models.TripStatus;
 import com.app.thechatrooms.utilities.Parameters;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.firebase.database.DataSnapshot;
@@ -94,7 +95,7 @@ public class ViewRideOffersFragment extends Fragment implements OffersAdapter.Of
         messageRef.child(messageId).child(Parameters.MESSAGE_TYPE).setValue(Parameters.MESSAGE_TYPE_RIDE_IN_PROGRESS);
         messageRef.child(messageId).child(Parameters.MESSAGE).setValue(Parameters.TRIP_PROGRESS);
         tripRef = firebaseDatabase.getReference("chatRooms/trips/"+messageId);
-        tripRef.child(Parameters.TRIP_STATUS).setValue(Parameters.TRIP_STATUS_IN_PROGRESS);
+        tripRef.child(Parameters.TRIP_STATUS).setValue(TripStatus.IN_PROGESS);
 
         tripRef.child(Parameters.DRIVERS).setValue(null);
         tripRef.child(Parameters.DRIVER_ACCEPTED).setValue(driverId);

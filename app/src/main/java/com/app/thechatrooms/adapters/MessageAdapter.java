@@ -250,7 +250,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         viewHolder.getAccept().setClickable(false);
                     }
                 }
-
             }
 
             @Override
