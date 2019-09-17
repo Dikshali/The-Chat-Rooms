@@ -56,7 +56,7 @@ public class TheirTripEndViewHolder extends RecyclerView.ViewHolder {
     public TheirTripEndViewHolder(@NonNull View itemView) {
         super(itemView);
         senderNameTextView = itemView.findViewById(R.id.fragment_their_trip_end_senderNameTextView);
-        messageTextView = itemView.findViewById(R.id.fragment_their_trip_end_senderNameTextView);
+        messageTextView = itemView.findViewById(R.id.fragment_their_trip_end_messageTextView);
         timeTextView = itemView.findViewById(R.id.fragment_their_trip_end_timeTextView);
         likeCountTextView = itemView.findViewById(R.id.fragment_their_trip_end_likeCountTextView);
         likeButton = itemView.findViewById(R.id.fragment_their_trip_end_likeImageButton);
