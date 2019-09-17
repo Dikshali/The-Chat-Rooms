@@ -345,8 +345,8 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onDestroy() {
+        super.onDestroy();
         Toast.makeText(getContext(), "DESTROY", Toast.LENGTH_LONG).show();
         tripRef = firebaseDatabase.getReference("chatRooms/trips/" );
         myRef = firebaseDatabase.getReference("chatRooms/messages/" + groupId);
@@ -355,11 +355,27 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
             if (myRef.child(s) != null){
                 myRef.child(s).child(Parameters.MESSAGE_TYPE).setValue(Parameters.TRIP_STATUS_END);
                 myRef.child(s).child(Parameters.MESSAGE).setValue(Parameters.MESSAGE_TYPE_RIDE_COMPLETE);
-                    tripRef.child(s).child(Parameters.TRIP_STATUS).setValue(TripStatus.COMPLETED);
+                tripRef.child(s).child(Parameters.TRIP_STATUS).setValue(TripStatus.COMPLETED);
             }
         }
-
     }
+
+//    @Override
+//    public void onDestroyView() {
+//        super.onDestroyView();
+//        Toast.makeText(getContext(), "DESTROY", Toast.LENGTH_LONG).show();
+//        tripRef = firebaseDatabase.getReference("chatRooms/trips/" );
+//        myRef = firebaseDatabase.getReference("chatRooms/messages/" + groupId);
+//        for (String s: tripIds){
+////                    tripRef.child(s).child(Parameters.TRIP_STATUS).setValue(Parameters.TRIP_STATUS_END);
+//            if (myRef.child(s) != null){
+//                myRef.child(s).child(Parameters.MESSAGE_TYPE).setValue(Parameters.TRIP_STATUS_END);
+//                myRef.child(s).child(Parameters.MESSAGE).setValue(Parameters.MESSAGE_TYPE_RIDE_COMPLETE);
+//                    tripRef.child(s).child(Parameters.TRIP_STATUS).setValue(TripStatus.COMPLETED);
+//            }
+//        }
+//
+//    }
 
     PlaceLatitudeLongitude startPoint = null, endPoint = null;
     Drivers drivers = null;
