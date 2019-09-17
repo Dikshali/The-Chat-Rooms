@@ -25,6 +25,7 @@ public final class Parameters {
     public static final String MESSAGE_TYPE_RIDE_COMPLETE = "rideComplete";
     public static final String TRIP_STATUS = "tripStatus";
     public static final String DRIVER_ACCEPTED = "driverAccepted";
+    public static final String TRIP_STATUS_IN_PROGRESS = "tripInProgress";
 
     public static final String RIDERS = "riders";
 
