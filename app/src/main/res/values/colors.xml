@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">#29295A</color>
     <color name="colorAccent">#FFFFFF</color>
     <color name="dialogColor">#9C9CE0</color>
-    <color name="tripColor">#03DAC6</color>
-    <color name="tripTheirColor">#018786</color>
+    <color name="tripColor">#BE6FDB</color>
+    <color name="tripTheirColor">#2096EC</color>
 
 </resources>

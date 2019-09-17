@@ -37,5 +37,9 @@ public final class Parameters {
     public static final String LONGITUDE = "longitude";
 
 
+    public static final String MY_TRIP_TEXT_DISPLAY = "Your ride is requested. Wait for someone to accept it.";
+    public static final String THEIR_RIDE_REQUEST = "The user has requested for a ride.";
+    public static final String PICKUP_DESTINATION = "Pickup Destination:";
+    public static final String DROPOFF_DESTINATION = "Drop off Destination:";
 
 }
