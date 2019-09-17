@@ -12,13 +12,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.app.thechatrooms.R;
 import com.app.thechatrooms.models.Drivers;
-import com.app.thechatrooms.models.User;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.ViewHolder> {
     Context context;
@@ -42,7 +40,7 @@ public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.ViewHolder
         final Drivers drivers = driversHashMap.get(position);
         holder.driverName.setText(drivers.getDriverName());
         holder.accept.setOnClickListener(view -> {
-            offersInterface.driverSelected(drivers.getDriverId());
+            offersInterface.driverSelected(drivers);
         });
     }
 
@@ -67,6 +65,6 @@ public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.ViewHolder
         }
     }
     public interface OffersInterface{
-        void driverSelected(String driverId);
+        void driverSelected(Drivers drivers);
     }
 }

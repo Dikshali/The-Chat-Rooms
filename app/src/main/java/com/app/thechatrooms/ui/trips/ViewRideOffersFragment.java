@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.app.thechatrooms.R;
 import com.app.thechatrooms.adapters.OffersAdapter;
@@ -27,7 +26,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -73,7 +71,7 @@ public class ViewRideOffersFragment extends Fragment implements OffersAdapter.Of
                         Drivers drivers = val.getValue(Drivers.class);
                         driversArrayList.add(drivers);
                         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                        offersAdapter = new OffersAdapter(getContext(), driversArrayList, ViewRideOffersFragment.this::driverSelected);
+                        offersAdapter = new OffersAdapter(getContext(), driversArrayList, driverId -> ViewRideOffersFragment.this.driverSelected(driverId));
                         recyclerView.setAdapter(offersAdapter);
                         offersAdapter.notifyDataSetChanged();
                         Log.d("Location", drivers.getDriverName());
@@ -91,7 +89,7 @@ public class ViewRideOffersFragment extends Fragment implements OffersAdapter.Of
     }
 
     @Override
-    public void driverSelected(String driverId) {
+    public void driverSelected(Drivers driverId) {
         messageRef = firebaseDatabase.getReference("chatRooms/messages/"+groupId);
         messageRef.child(messageId).child(Parameters.MESSAGE_TYPE).setValue(Parameters.MESSAGE_TYPE_RIDE_IN_PROGRESS);
         messageRef.child(messageId).child(Parameters.MESSAGE).setValue(Parameters.TRIP_PROGRESS);
@@ -101,8 +99,8 @@ public class ViewRideOffersFragment extends Fragment implements OffersAdapter.Of
         tripRef.child(Parameters.DRIVERS).setValue(null);
         tripRef.child(Parameters.DRIVER_ACCEPTED).setValue(driverId);
         addTrip = firebaseDatabase.getReference("chatRooms");
-        String key = addTrip.child(Parameters.ADD_TRIPS).child(Parameters.DRIVERS).child(driverId).push().getKey();
-        addTrip.child(Parameters.ADD_TRIPS).child(Parameters.DRIVERS).child(driverId).child(key).setValue(messageId);
+        String key = addTrip.child(Parameters.ADD_TRIPS).child(Parameters.DRIVERS).child(driverId.getDriverId()).push().getKey();
+        addTrip.child(Parameters.ADD_TRIPS).child(Parameters.DRIVERS).child(driverId.getDriverId()).child(key).setValue(messageId);
 
         getFragmentManager().popBackStack();
     }
