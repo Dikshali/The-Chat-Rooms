@@ -20,12 +20,18 @@ public final class Parameters {
 
     public static final String ADD_TRIPS = "addTrip";
     public static final String MESSAGE_TYPE = "messageType";
-    public static final String MESSAGE_TYPE_RIDE_REQUEST = "rideRequest";
-    public static final String MESSAGE_TYPE_RIDE_IN_PROGRESS = "rideProgress";
+    public static final String MESSAGE_TYPE_RIDE_REQUEST = "tripRequest";
+    public static final String MESSAGE_TYPE_RIDE_IN_PROGRESS = "tripInProgress";
+    public static final String MESSAGE_TYPE_RIDE_END = "tripEnd";
+
     public static final String MESSAGE_TYPE_RIDE_COMPLETE = "rideComplete";
     public static final String TRIP_STATUS = "tripStatus";
     public static final String DRIVER_ACCEPTED = "driverAccepted";
+    public static final String TRIP_STATUS_REQUEST = "tripRequest";
+
     public static final String TRIP_STATUS_IN_PROGRESS = "tripInProgress";
+    public static final String TRIP_STATUS_END = "tripEnd";
+
 
     public static final String RIDERS = "riders";
 

@@ -16,9 +16,11 @@ import com.app.thechatrooms.models.PlaceLatitudeLongitude;
 import com.app.thechatrooms.models.Trips;
 import com.app.thechatrooms.models.User;
 import com.app.thechatrooms.ui.messages.MyMessageViewHolder;
+import com.app.thechatrooms.ui.messages.MyTripEndViewHolder;
 import com.app.thechatrooms.ui.messages.MyTripInProgressViewHolder;
 import com.app.thechatrooms.ui.messages.MyTripRequestViewHolder;
 import com.app.thechatrooms.ui.messages.TheirMessageViewHolder;
+import com.app.thechatrooms.ui.messages.TheirTripEndViewHolder;
 import com.app.thechatrooms.ui.messages.TheirTripInProgressViewHolder;
 import com.app.thechatrooms.ui.messages.TheirTripRequestViewHolder;
 import com.app.thechatrooms.utilities.Parameters;
@@ -36,7 +38,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private final int MY_TEXT_MESSAGE = 0, THEIR_TEXT_MESSAGE = 1, MY_TRIP_REQUEST = 2, THEIR_TRIP_REQUEST = 3, THEIR_TRIP_PROGRESS = 5, MY_TRIP_PROGRESS = 4;
+    private final int MY_TEXT_MESSAGE = 0, THEIR_TEXT_MESSAGE = 1, MY_TRIP_REQUEST = 2, THEIR_TRIP_REQUEST = 3, THEIR_TRIP_PROGRESS = 5, MY_TRIP_PROGRESS = 4, MY_TRIP_END =7,THEIR_TRIP_END = 8;
     private Context context;
     private ArrayList<Messages> messagesArrayList;
     private User user;
@@ -66,14 +68,18 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 return MY_TEXT_MESSAGE;
             else if (message.getMessageType().equals(Parameters.MESSAGE_TYPE_RIDE_REQUEST))
                 return MY_TRIP_REQUEST;
-            else
+            else if (message.getMessageType().equals(Parameters.MESSAGE_TYPE_RIDE_IN_PROGRESS))
                 return MY_TRIP_PROGRESS;
+            else
+                return MY_TRIP_END;
         } else if (message.getMessageType().equals(Parameters.MESSAGE_TYPE_NORMAL))
             return THEIR_TEXT_MESSAGE;
         else if (message.getMessageType().equals(Parameters.MESSAGE_TYPE_RIDE_REQUEST))
             return THEIR_TRIP_REQUEST;
-        else
+        else if (message.getMessageType().equals(Parameters.MESSAGE_TYPE_RIDE_IN_PROGRESS))
             return THEIR_TRIP_PROGRESS;
+        else
+            return THEIR_TRIP_END;
 
     }
 
@@ -97,9 +103,15 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         } else if (viewType == MY_TRIP_PROGRESS) {
             View v1 = inflater.inflate(R.layout.fragment_message_items_my_trip_progress, parent, false);
             viewHolder = new MyTripInProgressViewHolder(v1);
-        } else {
+        } else if (viewType == THEIR_TRIP_PROGRESS){
             View v1 = inflater.inflate(R.layout.fragment_message_items_their_trip_progress, parent, false);
             viewHolder = new TheirTripInProgressViewHolder(v1);
+        } else if (viewType == MY_TRIP_END){
+            View v1 = inflater.inflate(R.layout.fragment_message_my_trip_end, parent, false);
+            viewHolder = new MyTripEndViewHolder(v1);
+        } else {
+            View v1 = inflater.inflate(R.layout.fragment_message_items_their_trip_end, parent, false);
+            viewHolder = new TheirTripEndViewHolder(v1);
         }
         return viewHolder;
     }
@@ -123,9 +135,15 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             } else if (holder.getItemViewType() == MY_TRIP_PROGRESS) {
                 MyTripInProgressViewHolder vh1 = (MyTripInProgressViewHolder) holder;
                 configureMyTripProgressViewHolder(vh1, position);
-            } else {
+            } else if (holder.getItemViewType() == THEIR_TRIP_PROGRESS){
                 TheirTripInProgressViewHolder vh1 = (TheirTripInProgressViewHolder) holder;
                 configureTheirTripProgressViewHolder(vh1, position);
+            } else if (holder.getItemViewType() == MY_TRIP_END){
+                MyTripEndViewHolder vh1 = (MyTripEndViewHolder) holder;
+                configureMyTripEndViewHolder(vh1, position);
+            } else if (holder.getItemViewType() == THEIR_TRIP_END){
+                TheirTripEndViewHolder vh1 = (TheirTripEndViewHolder) holder;
+                configureTheirTripEndViewHolder(vh1, position);
             }
         } catch (ParseException ex) {
             ex.printStackTrace();
@@ -133,6 +151,26 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     private void configureTheirTextMessageViewHolder(TheirMessageViewHolder viewHolder, int position) throws ParseException {
+        Messages messages = messagesArrayList.get(position);
+        viewHolder.getSenderNameTextView().setText(messages.getCreatedByName());
+        viewHolder.getMessageTextView().setText(messages.getMessage());
+        if (messages.getLikesUserId() != null) {
+            viewHolder.getLikeCountTextView().setText(Integer.toString(messages.getLikesUserId().size()));
+            if (messages.checkLikeId(user.getId())) {
+                viewHolder.getLikeButton().setImageResource(R.drawable.ic_thumb_up_dark_blue);
+                viewHolder.getLikeButton().setEnabled(false);
+            }
+        } else
+            viewHolder.getLikeCountTextView().setText(Integer.toString(0));
+        Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(messages.getCreatedOn());
+        viewHolder.getTimeTextView().setText(pt.format(date));
+        viewHolder.getLikeButton().setOnClickListener(view -> {
+            messages.addLikes(user.getId());
+            myRef.child(messages.getMessageId()).setValue(messages);
+        });
+    }
+
+    private void configureTheirTripEndViewHolder(TheirTripEndViewHolder viewHolder, int position) throws ParseException{
         Messages messages = messagesArrayList.get(position);
         viewHolder.getSenderNameTextView().setText(messages.getCreatedByName());
         viewHolder.getMessageTextView().setText(messages.getMessage());
@@ -207,7 +245,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     viewHolder.getTheirRequestMessage().setText(Parameters.THEIR_RIDE_REQUEST + "\n"
                             + Parameters.PICKUP_DESTINATION + " " + trips[0].getStartPoint().getName() + "\n"
                             + Parameters.DROPOFF_DESTINATION + " " + trips[0].getEndPoint().getName());
-
                     if (dataSnapshot.child("drivers").child(user.getId()).exists()) {
                         viewHolder.getAccept().setVisibility(View.GONE);
                         viewHolder.getAccept().setClickable(false);
@@ -237,6 +274,28 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 
     private void configureMyTextMessageViewHolder(MyMessageViewHolder viewHolder, int position) throws ParseException {
+        Messages messages = messagesArrayList.get(position);
+        viewHolder.getMessageTextView().setText(messages.getMessage());
+        if (messages.getLikesUserId() != null) {
+            viewHolder.getLikeCountTextView().setText(Integer.toString(messages.getLikesUserId().size()));
+            if (messages.checkLikeId(user.getId())) {
+                viewHolder.getLikeButton().setImageResource(R.drawable.ic_thumb_up_dark_blue);
+                viewHolder.getLikeButton().setEnabled(false);
+            }
+        } else
+            viewHolder.getLikeCountTextView().setText(Integer.toString(0));
+        Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(messages.getCreatedOn());
+        viewHolder.getTimeTextView().setText(pt.format(date));
+        viewHolder.getLikeButton().setOnClickListener(view -> {
+            messages.addLikes(user.getId());
+            myRef.child(messages.getMessageId()).setValue(messages);
+        });
+        viewHolder.getDeleteButton().setOnClickListener(view -> {
+            deleteMessage(messages.getMessageId());
+        });
+    }
+
+    private void configureMyTripEndViewHolder(MyTripEndViewHolder viewHolder, int position) throws ParseException{
         Messages messages = messagesArrayList.get(position);
         viewHolder.getMessageTextView().setText(messages.getMessage());
         if (messages.getLikesUserId() != null) {

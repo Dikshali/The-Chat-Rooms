@@ -76,7 +76,7 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
     ArrayList<Messages> messagesArrayList = new ArrayList<>();
     private MessageAdapter messageAdapter;
     private User user;
-    private DatabaseReference myRef, groupDbRef, tripRef,userRef;
+    private DatabaseReference myRef, groupDbRef, tripRef,userRef, addTripRef;
     private FirebaseDatabase firebaseDatabase;
     LatLng latlng;
     LocationListener locationListener;
@@ -84,6 +84,7 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
     Location location;
     private String groupId;
 
+    ArrayList<String> tripIds = new ArrayList<>();
 
     private double longitude, latitude;
     private FusedLocationProviderClient mFusedLocationClient;
@@ -145,6 +146,23 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
             }
         });
 
+        addTripRef = firebaseDatabase.getReference("chatRooms/addTrip/riders/"+user.getId());
+
+        addTripRef.addValueEventListener(new ValueEventListener() {
+
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot child: dataSnapshot.getChildren()){
+                    tripIds.add((String) child.getValue());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         return view;
     }
 
@@ -330,19 +348,15 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
         super.onDestroyView();
         Toast.makeText(getContext(), "DESTROY", Toast.LENGTH_LONG).show();
         tripRef = firebaseDatabase.getReference("chatRooms/trips/" );
-        tripRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-
-
+        myRef = firebaseDatabase.getReference("chatRooms/messages/" + groupId);
+        for (String s: tripIds){
+//                    tripRef.child(s).child(Parameters.TRIP_STATUS).setValue(Parameters.TRIP_STATUS_END);
+            if (myRef.child(s) != null){
+                myRef.child(s).child(Parameters.MESSAGE_TYPE).setValue(Parameters.TRIP_STATUS_END);
+                myRef.child(s).child(Parameters.MESSAGE).setValue(Parameters.MESSAGE_TYPE_RIDE_COMPLETE);
+                tripRef.child(s).child(Parameters.TRIP_STATUS).setValue(Parameters.TRIP_STATUS_END);
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        }
 
     }
 

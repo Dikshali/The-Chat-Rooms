@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clipToPadding="false"
+    android:paddingVertical="10dp"
+    android:paddingRight="5dp"
+    tools:targetApi="o">
+
+    <ImageButton
+        android:id="@+id/fragment_my_trip_end_deleteImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fragment_my_trip_end_messageTextView"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="3dp"
+        android:background="@null"
+        android:contentDescription="@string/delete"
+        app:srcCompat="@drawable/ic_delete_black" />
+
+    <ImageButton
+        android:id="@+id/fragment_my_trip_end_likeImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fragment_my_trip_end_messageTextView"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="3dp"
+        android:layout_toStartOf="@+id/fragment_my_trip_end_likeCountTextView"
+        android:background="@null"
+        android:contentDescription="@string/like"
+        app:srcCompat="@drawable/ic_thumb_up_light_blue" />
+
+    <TextView
+        android:id="@+id/fragment_my_trip_end_likeCountTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fragment_my_trip_end_messageTextView"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="3dp"
+        android:layout_toStartOf="@+id/fragment_my_trip_end_deleteImageButton"
+        android:textColor="?attr/colorPrimaryDark" />
+
+    <TextView
+        android:id="@+id/fragment_my_trip_end_messageTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="1dp"
+        android:background="@drawable/message_chat_bubble"
+        android:elevation="2dp"
+        android:padding="10dp"
+        android:textColor="#ffffff"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/fragment_my_trip_end_timeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fragment_my_trip_end_messageTextView"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="3dp"
+        android:layout_toStartOf="@+id/fragment_my_trip_end_likeImageButton" />
+
+
+</RelativeLayout>

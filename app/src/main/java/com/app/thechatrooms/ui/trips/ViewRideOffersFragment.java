@@ -69,27 +69,20 @@ public class ViewRideOffersFragment extends Fragment implements OffersAdapter.Of
                 if (dataSnapshot.child(Parameters.DRIVERS).exists()){
                     driversArrayList.clear();
                     for (DataSnapshot val: dataSnapshot.child(Parameters.DRIVERS).getChildren()){
-//                        Drivers drivers = val.
-//                        PlaceLatitueLongitude placeLatitueLongitude = (PlaceLatitueLongitude) val.child("driverLocation").getValue();
+
                         Drivers drivers = val.getValue(Drivers.class);
                         driversArrayList.add(drivers);
                         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                         offersAdapter = new OffersAdapter(getContext(), driversArrayList, ViewRideOffersFragment.this::driverSelected);
                         recyclerView.setAdapter(offersAdapter);
                         offersAdapter.notifyDataSetChanged();
-//                        PlaceLatitueLongitude placeLatitueLongitude = val.child("driverLocation").getValue(PlaceLatitueLongitude.class);
                         Log.d("Location", drivers.getDriverName());
                     }
-//                    Toast.makeText(getContext(),"DRIVERS HERE", Toast.LENGTH_LONG).show();
                 }
-//                mapFragment.getMapAsync(PickUpOffersFragment.this::onMapReady);
-//                riderLocation = dataSnapshot.child("startPoint").getValue(PlaceLatitudeLongitude.class);
-
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
 
