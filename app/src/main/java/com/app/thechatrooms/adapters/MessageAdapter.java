@@ -223,6 +223,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         });
         viewHolder.getAccept().setOnClickListener(view -> {
             messageInterface.setDriversLocation(user, messages.getMessageId());
+
         });
         viewHolder.getInfoButton().setOnClickListener(view -> {
             messageInterface.theirTripRequestInfo(messages.getMessageId());

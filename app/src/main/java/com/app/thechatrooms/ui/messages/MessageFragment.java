@@ -43,6 +43,7 @@ import com.app.thechatrooms.ui.profile.ProfileFragment;
 import com.app.thechatrooms.ui.trips.PickUpOffersFragment;
 import com.app.thechatrooms.ui.trips.RequestTripFragment;
 import com.app.thechatrooms.ui.trips.TripLiveLocationFragment;
+import com.app.thechatrooms.ui.trips.ViewRideOffersFragment;
 import com.app.thechatrooms.utilities.Parameters;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -200,10 +201,18 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
 
     @Override
     public void viewPickUpOffers(String messageId) {
-        Intent intent = new Intent(getActivity(), PickUpOffersFragment.class);
-        intent.putExtra(Parameters.GROUP_ID, groupId);
-        intent.putExtra(Parameters.MESSAGE_ID, messageId);
-        startActivityForResult(intent, PICKUPOFFERS);
+
+
+        FragmentManager manager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = manager.beginTransaction();
+        ViewRideOffersFragment viewRideOffersFragment = new ViewRideOffersFragment();
+        Bundle rideOffersBundle = new Bundle();
+        rideOffersBundle.putString(Parameters.GROUP_ID, groupId);
+        rideOffersBundle.putString(Parameters.MESSAGE_ID, messageId);
+        viewRideOffersFragment.setArguments(rideOffersBundle);
+        fragmentTransaction.replace(R.id.nav_host_fragment,viewRideOffersFragment).addToBackStack(null);
+        fragmentTransaction.commit();
+
     }
 
     @Override

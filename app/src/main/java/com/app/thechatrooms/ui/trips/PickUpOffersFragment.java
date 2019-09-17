@@ -11,7 +11,8 @@ import android.widget.Toast;
 
 import com.app.thechatrooms.R;
 import com.app.thechatrooms.models.Drivers;
-import com.app.thechatrooms.models.PlaceLatitueLongitude;
+import com.app.thechatrooms.models.PlaceLatitudeLongitude;
+
 import com.app.thechatrooms.models.User;
 import com.app.thechatrooms.utilities.Parameters;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -41,7 +42,7 @@ public class PickUpOffersFragment extends FragmentActivity implements OnMapReady
 
 
     private DatabaseReference myRef, messageRef, tripRef, addTrip;
-    PlaceLatitueLongitude riderLocation;
+    PlaceLatitudeLongitude riderLocation;
     private GoogleMap mMap;
     private FirebaseDatabase firebaseDatabase;
     private HashMap<String, Drivers> driversArrayList =new HashMap<>();
@@ -75,20 +76,17 @@ public class PickUpOffersFragment extends FragmentActivity implements OnMapReady
                     for (DataSnapshot val: dataSnapshot.child(Parameters.DRIVERS).getChildren()){
 //                        Drivers drivers = val.
 //                        PlaceLatitueLongitude placeLatitueLongitude = (PlaceLatitueLongitude) val.child("driverLocation").getValue();
-
                         Drivers drivers = val.getValue(Drivers.class);
                         driversArrayList.put(drivers.getDriverId(), drivers);
 //                        PlaceLatitueLongitude placeLatitueLongitude = val.child("driverLocation").getValue(PlaceLatitueLongitude.class);
                         Log.d("Location", drivers.getDriverName());
-
-
                     }
                     Toast.makeText(PickUpOffersFragment.this,"DRIVERS HERE", Toast.LENGTH_LONG).show();
                 }
                 else
                     Toast.makeText(PickUpOffersFragment.this,"NO OFFERS", Toast.LENGTH_LONG).show();
                 mapFragment.getMapAsync(PickUpOffersFragment.this::onMapReady);
-                riderLocation = dataSnapshot.child("startPoint").getValue(PlaceLatitueLongitude.class);
+                riderLocation = dataSnapshot.child("startPoint").getValue(PlaceLatitudeLongitude.class);
 
             }
 
@@ -100,13 +98,6 @@ public class PickUpOffersFragment extends FragmentActivity implements OnMapReady
 //        mapFragment.getMapAsync(this);
 
     }
-
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//                             Bundle savedInstanceState) {
-//
-//    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -154,7 +145,7 @@ public class PickUpOffersFragment extends FragmentActivity implements OnMapReady
             messageRef.child(messageId).child(Parameters.MESSAGE_TYPE).setValue(Parameters.MESSAGE_TYPE_RIDE_IN_PROGRESS);
             messageRef.child(messageId).child(Parameters.MESSAGE).setValue(Parameters.TRIP_PROGRESS);
             tripRef = firebaseDatabase.getReference("chatRooms/trips/"+messageId);
-            tripRef.child(Parameters.TRIP_STATUS).setValue(Parameters.TRIP_STATUS_PROGRESS);
+            tripRef.child(Parameters.TRIP_STATUS).setValue(Parameters.TRIP_STATUS_IN_PROGRESS);
 
             drivers = new Drivers();
             tripRef.child(Parameters.DRIVERS).addValueEventListener(new ValueEventListener() {
