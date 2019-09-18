@@ -212,7 +212,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(messages.getCreatedOn());
         viewHolder.getMyTripProgressTime().setText(pt.format(date));
         viewHolder.getInfoButton().setOnClickListener(view -> {
-            messageInterface.viewDriversProgress(messages.getMessageId());
+            messageInterface.viewDriversProgress(messages.getMessageId(),groupId);
         });
         viewHolder.getDeleteButton().setOnClickListener(view -> {
             deleteTrip(messages.getMessageId());
@@ -231,7 +231,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         viewHolder.getInfoButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                messageInterface.viewDriversProgress(messages.getMessageId());
+                messageInterface.viewDriversProgress(messages.getMessageId(), groupId);
             }
         });
     }
@@ -343,7 +343,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         void setDriversLocation(User drivers, String messageId);
 
-        void viewDriversProgress(String messageId);
+        void viewDriversProgress(String messageId, String groupId);
 
         void theirTripRequestInfo(String messageId);
 

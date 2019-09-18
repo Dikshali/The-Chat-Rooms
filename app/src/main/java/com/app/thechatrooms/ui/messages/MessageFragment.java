@@ -380,7 +380,7 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
     Drivers drivers = null;
 
     @Override
-    public void viewDriversProgress(String messageId) {
+    public void viewDriversProgress(String messageId, String groupId ) {
         tripRef = firebaseDatabase.getReference("chatRooms/trips/" + messageId );
 
         Intent intent = new Intent(getActivity(), TripLiveLocationFragment.class);
@@ -394,6 +394,7 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
                 intent.putExtra(Parameters.DRIVER_ACCEPTED ,drivers);
                 intent.putExtra(Parameters.START_POINT, startPoint);
                 intent.putExtra(Parameters.MESSAGE_ID, messageId);
+                intent.putExtra(Parameters.GROUP_ID, groupId);
                 startActivityForResult(intent, LIVELOCATION);
             }
 

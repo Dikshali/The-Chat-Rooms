@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentActivity;
 import com.app.thechatrooms.R;
 import com.app.thechatrooms.models.Drivers;
 import com.app.thechatrooms.models.PlaceLatitudeLongitude;
+import com.app.thechatrooms.models.TripStatus;
 import com.app.thechatrooms.utilities.Parameters;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -43,7 +44,7 @@ public class TripLiveLocationFragment extends FragmentActivity implements OnMapR
 
     private GoogleMap mMap;
     Drivers drivers;
-    private String messageId, driverId, id;
+    private String messageId, driverId, id, groupId;
     PlaceLatitudeLongitude startPoint;
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationRequest locationRequest;
@@ -64,8 +65,9 @@ public class TripLiveLocationFragment extends FragmentActivity implements OnMapR
         startPoint = (PlaceLatitudeLongitude) intent.getSerializableExtra(Parameters.START_POINT);
         messageId = intent.getStringExtra(Parameters.MESSAGE_ID);
         driverId = drivers.getDriverId();
+        groupId = intent.getStringExtra(Parameters.GROUP_ID);
         id = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        //mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
         if(savedInstanceState == null) {
             mapFragment.getMapAsync(TripLiveLocationFragment.this::onMapReady);
         }
@@ -75,14 +77,13 @@ public class TripLiveLocationFragment extends FragmentActivity implements OnMapR
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         LatLng driveLoc = new LatLng(drivers.getDriverLocation().getLatitude(), drivers.getDriverLocation().getLongitude());
-        /*mMap.setMyLocationEnabled(true);
-        LatLng driveLoc = new LatLng(drivers.getDriverLocation().getLatitude(), drivers.getDriverLocation().getLongitude());
+        mMap.setMyLocationEnabled(true);
+
         mMap.addMarker(markerDriver.position(driveLoc).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))).setTitle("You are here");
 
         locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(5 * 1000);
-
 
         mLocationCallBack = new LocationCallback(){
             @Override
@@ -97,15 +98,22 @@ public class TripLiveLocationFragment extends FragmentActivity implements OnMapR
                             Log.d("****************TAG", "update location"+ start.latitude+ " , "+start.longitude);
                             firebaseDatabase.getReference("chatRooms/trips/" + messageId + "/" + Parameters.DRIVER_ACCEPTED + "/driverLocation").child(Parameters.LATITUDE).setValue(start.latitude);
                             firebaseDatabase.getReference("chatRooms/trips/" + messageId + "/" + Parameters.DRIVER_ACCEPTED + "/driverLocation").child(Parameters.LONGITUDE).setValue(start.longitude);
-                            Log.d("****************TAG1236", "update location"+ start.latitude+ " , "+start.longitude);
+                            Log.d("******" +
+                                    "**********TAG1236", "update location"+ start.latitude+ " , "+start.longitude);
                             markerDriver.position(start);
+                            if (getDistance(start, new LatLng(startPoint.getLatitude(), startPoint.getLongitude())) < 30.0){
+                                firebaseDatabase.getReference("chatRooms/trips/" + messageId).child(Parameters.TRIP_STATUS).setValue(TripStatus.COMPLETED);
+                                firebaseDatabase.getReference("chatRooms/messages/" + groupId+"/"+messageId).child(Parameters.MESSAGE_TYPE).setValue(Parameters.TRIP_STATUS_END);
+                                firebaseDatabase.getReference("chatRooms/messages"+groupId+"/"+messageId).child(Parameters.MESSAGE).setValue(Parameters.MESSAGE_TYPE_RIDE_END);
+                                finish();
+                            }
 
                         }
                     }
                 }
             }
         };
-        mFusedLocationClient.requestLocationUpdates(locationRequest, mLocationCallBack, Looper.myLooper());*/
+        mFusedLocationClient.requestLocationUpdates(locationRequest, mLocationCallBack, null);
 
         if(drivers!=null && startPoint!=null){
             double destinationLat = startPoint.getLatitude(), destinationLong = startPoint.getLongitude();
@@ -127,6 +135,20 @@ public class TripLiveLocationFragment extends FragmentActivity implements OnMapR
             getDirectionData.execute(data);
 
         }
+    }
+    public static float getDistance(LatLng latlngA, LatLng latlngB) {
+        Location locationA = new Location("point A");
+
+        locationA.setLatitude(latlngA.latitude);
+        locationA.setLongitude(latlngA.longitude);
+
+        Location locationB = new Location("point B");
+
+        locationB.setLatitude(latlngB.latitude);
+        locationB.setLongitude(latlngB.longitude);
+
+        float distance = locationA.distanceTo(locationB)/1000;//To convert Meter in Kilometer
+        return distance;
     }
 
 }
