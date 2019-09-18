@@ -1,9 +1,17 @@
 package com.app.thechatrooms.ui.trips;
 
 
+import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,8 +24,10 @@ import android.view.ViewGroup;
 import com.app.thechatrooms.R;
 import com.app.thechatrooms.adapters.OffersAdapter;
 import com.app.thechatrooms.models.Drivers;
+import com.app.thechatrooms.models.Messages;
 import com.app.thechatrooms.models.PlaceLatitudeLongitude;
 import com.app.thechatrooms.models.TripStatus;
+import com.app.thechatrooms.models.User;
 import com.app.thechatrooms.utilities.Parameters;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.firebase.database.DataSnapshot;
@@ -37,11 +47,13 @@ public class ViewRideOffersFragment extends Fragment implements OffersAdapter.Of
 
 
     private DatabaseReference myRef, messageRef, tripRef, addTrip;
+    private User user;
     PlaceLatitudeLongitude riderLocation;
     private GoogleMap mMap;
     private FirebaseDatabase firebaseDatabase;
     private ArrayList<Drivers> driversArrayList =new ArrayList<>();
     private RecyclerView recyclerView;
+    private Boolean isUserDriver = false;
     private OffersAdapter offersAdapter;
 
 
@@ -56,6 +68,7 @@ public class ViewRideOffersFragment extends Fragment implements OffersAdapter.Of
         View view = inflater.inflate(R.layout.fragment_view_ride_offers, container, false);
         groupId = getArguments().getString(Parameters.GROUP_ID);
         messageId = getArguments().getString(Parameters.MESSAGE_ID);
+        user = (User) getArguments().getSerializable(Parameters.USER_ID);
         firebaseDatabase = FirebaseDatabase.getInstance();
         myRef = firebaseDatabase.getReference("chatRooms/trips/" + messageId);
         recyclerView = view.findViewById(R.id.fragment_view_ride_offers_recyclerView);
@@ -67,10 +80,13 @@ public class ViewRideOffersFragment extends Fragment implements OffersAdapter.Of
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.child(Parameters.DRIVERS).exists()){
                     driversArrayList.clear();
+                    isUserDriver = false;
                     for (DataSnapshot val: dataSnapshot.child(Parameters.DRIVERS).getChildren()){
 
                         Drivers drivers = val.getValue(Drivers.class);
                         driversArrayList.add(drivers);
+                        if (drivers.getDriverId().equals(user.getId()))
+                            isUserDriver = true;
                         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                         offersAdapter = new OffersAdapter(getContext(), driversArrayList, driverId -> ViewRideOffersFragment.this.driverSelected(driverId));
                         recyclerView.setAdapter(offersAdapter);

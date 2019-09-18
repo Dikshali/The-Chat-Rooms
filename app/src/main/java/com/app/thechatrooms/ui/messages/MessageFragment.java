@@ -225,6 +225,7 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
         Bundle rideOffersBundle = new Bundle();
         rideOffersBundle.putString(Parameters.GROUP_ID, groupId);
         rideOffersBundle.putString(Parameters.MESSAGE_ID, messageId);
+        rideOffersBundle.putSerializable(Parameters.USER_ID, user);
         viewRideOffersFragment.setArguments(rideOffersBundle);
         fragmentTransaction.replace(R.id.nav_host_fragment,viewRideOffersFragment).addToBackStack(null);
         fragmentTransaction.commit();
@@ -490,7 +491,7 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
     }
 
     @Override
-    public void showNotification(String messageId) {
+    public void showNotification(Messages messages, String tripType, String content) {
         NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
         String NOTIFICATION_CHANNEL_ID = "The_Chat_Rooms";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -510,12 +511,12 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setTicker("The Chat Rooms")
                 //.setPriority(Notification.PRIORITY_MAX)
-                .setContentTitle("Trip Request")
-                .setContentText("This is sample notification")
+                .setContentTitle(tripType)
+                .setContentText(content)
                 .setContentInfo("Information");
         notificationManager.notify(1, notificationBuilder.build());
         myRef = firebaseDatabase.getReference("chatRooms/messages/" + groupId);
-        myRef.child(messageId).child("notification").setValue(false);
+        myRef.child(messages.getMessageId()).child("notification").setValue(false);
 
     }
 }

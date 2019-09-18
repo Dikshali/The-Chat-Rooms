@@ -234,6 +234,23 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 messageInterface.viewDriversProgress(messages.getMessageId(), groupId);
             }
         });
+        if (messages.getNotification()){
+            tripRef = firebaseDatabase.getReference("chatRooms/trips/" + messages.getMessageId());
+            tripRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    messageInterface.showNotification(messages, Parameters.TRIP_PROGRESS, "Accepted Driver" + (String) dataSnapshot.child(Parameters.DRIVER_ACCEPTED).child("driverName").getValue());
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+        }
+
     }
 
     private void configureTheirTripRequestViewHolder(TheirTripRequestViewHolder viewHolder, int position) throws ParseException {
@@ -276,7 +293,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(messages.getCreatedOn());
         viewHolder.getTheirTripRequestTime().setText(pt.format(date));
         if (messages.getNotification())
-            messageInterface.showNotification(messages.getMessageId());
+            messageInterface.showNotification(messages, Parameters.TRIP_REQUEST, "By" + messages.getCreatedByName());
 
 
     }
@@ -353,7 +370,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         void openMap(PlaceLatitudeLongitude startPoint, PlaceLatitudeLongitude endPoint);
 
-        void showNotification(String messageId);
+        void showNotification(Messages messages, String tripType, String content);
     }
 
 }
