@@ -192,7 +192,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private void configureMyTripRequestViewHolder(MyTripRequestViewHolder viewHolder, int position) throws ParseException {
         Messages messages = messagesArrayList.get(position);
-        viewHolder.getMyTripRequestMessage().setText(Parameters.MY_TRIP_TEXT_DISPLAY);
+        viewHolder.getMyTripRequestMessage().setText(messages.getMessage());
         Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(messages.getCreatedOn());
         viewHolder.getMyTripRequestTime().setText(pt.format(date));
         viewHolder.getInfoButton().setOnClickListener(view -> {
@@ -257,17 +257,18 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         Messages messages = messagesArrayList.get(position);
         viewHolder.getTheirRequestMessage().setText(messages.getMessage());
         viewHolder.getSenderName().setText(messages.getCreatedByName());
+        viewHolder.getTheirRequestMessage().setText(messages.getMessage());
         tripRef = firebaseDatabase.getReference("chatRooms/trips/" + messages.getMessageId());
-        final Trips[] trips = new Trips[1];
+
         tripRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 if (dataSnapshot.exists()) {
-                    trips[0] = dataSnapshot.getValue(Trips.class);
-                    viewHolder.getTheirRequestMessage().setText(Parameters.THEIR_RIDE_REQUEST + "\n"
-                            + Parameters.PICKUP_DESTINATION + " " + trips[0].getStartPoint().getName() + "\n"
-                            + Parameters.DROPOFF_DESTINATION + " " + trips[0].getEndPoint().getName());
+                    Trips trips = dataSnapshot.getValue(Trips.class);
+                    viewHolder.getOpenInMaps().setOnClickListener(view -> {
+                        messageInterface.openMap(trips.getStartPoint(), trips.getEndPoint());
+                    });
                     if (dataSnapshot.child("drivers").child(user.getId()).exists()) {
                         viewHolder.getAccept().setVisibility(View.GONE);
                         viewHolder.getAccept().setClickable(false);
@@ -287,8 +288,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         viewHolder.getInfoButton().setOnClickListener(view -> {
             messageInterface.theirTripRequestInfo(messages.getMessageId());
         });
-
-        viewHolder.getOpenInMaps().setOnClickListener(view -> messageInterface.openMap(trips[0].getStartPoint(), trips[0].getEndPoint()));
 
         Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(messages.getCreatedOn());
         viewHolder.getTheirTripRequestTime().setText(pt.format(date));
