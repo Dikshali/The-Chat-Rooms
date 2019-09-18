@@ -150,6 +150,15 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+    public void likeButtonOnClickListener(Messages messages){
+        if (messages.checkLikeId(user.getId())){
+            messages.getLikesUserId().remove(user.getId());
+        }else{
+            messages.addLikes(user.getId());
+        }
+        myRef.child(messages.getMessageId()).setValue(messages);
+    }
+
     private void configureTheirTextMessageViewHolder(TheirMessageViewHolder viewHolder, int position) throws ParseException {
         Messages messages = messagesArrayList.get(position);
         viewHolder.getSenderNameTextView().setText(messages.getCreatedByName());
@@ -158,15 +167,13 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             viewHolder.getLikeCountTextView().setText(Integer.toString(messages.getLikesUserId().size()));
             if (messages.checkLikeId(user.getId())) {
                 viewHolder.getLikeButton().setImageResource(R.drawable.ic_thumb_up_dark_blue);
-                viewHolder.getLikeButton().setEnabled(false);
             }
         } else
             viewHolder.getLikeCountTextView().setText(Integer.toString(0));
         Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(messages.getCreatedOn());
         viewHolder.getTimeTextView().setText(pt.format(date));
         viewHolder.getLikeButton().setOnClickListener(view -> {
-            messages.addLikes(user.getId());
-            myRef.child(messages.getMessageId()).setValue(messages);
+            likeButtonOnClickListener(messages);
         });
     }
 
@@ -178,15 +185,13 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             viewHolder.getLikeCountTextView().setText(Integer.toString(messages.getLikesUserId().size()));
             if (messages.checkLikeId(user.getId())) {
                 viewHolder.getLikeButton().setImageResource(R.drawable.ic_thumb_up_dark_blue);
-                viewHolder.getLikeButton().setEnabled(false);
             }
         } else
             viewHolder.getLikeCountTextView().setText(Integer.toString(0));
         Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(messages.getCreatedOn());
         viewHolder.getTimeTextView().setText(pt.format(date));
         viewHolder.getLikeButton().setOnClickListener(view -> {
-            messages.addLikes(user.getId());
-            myRef.child(messages.getMessageId()).setValue(messages);
+            likeButtonOnClickListener(messages);
         });
     }
 
@@ -203,6 +208,10 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             deleteMessage(messages.getMessageId());
 
         });
+
+        viewHolder.getLikeButton().setOnClickListener(view -> {
+            likeButtonOnClickListener(messages);
+        });
     }
 
     private void configureMyTripProgressViewHolder(MyTripInProgressViewHolder viewHolder, int position) throws ParseException {
@@ -218,6 +227,10 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             deleteTrip(messages.getMessageId());
             deleteMessage(messages.getMessageId());
         });
+
+        viewHolder.getLikeButton().setOnClickListener(view -> {
+            likeButtonOnClickListener(messages);
+        });
     }
 
     private void configureTheirTripProgressViewHolder(TheirTripInProgressViewHolder viewHolder, int position) throws ParseException {
@@ -228,12 +241,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         viewHolder.getTheirTripProgressMessage().setText(messages.getMessage());
         Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(messages.getCreatedOn());
         viewHolder.getTheirTripProgressTime().setText(pt.format(date));
-        viewHolder.getInfoButton().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                messageInterface.viewDriversProgress(messages.getMessageId(), groupId);
-            }
-        });
+        viewHolder.getInfoButton().setOnClickListener(view -> messageInterface.viewDriversProgress(messages.getMessageId(), groupId));
         if (messages.getNotification()){
             tripRef = firebaseDatabase.getReference("chatRooms/trips/" + messages.getMessageId());
             tripRef.addValueEventListener(new ValueEventListener() {
@@ -250,6 +258,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             });
 
         }
+
+        viewHolder.getLikeButton().setOnClickListener(view -> likeButtonOnClickListener(messages));
 
     }
 
@@ -294,7 +304,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if (messages.getNotification())
             messageInterface.showNotification(messages, Parameters.TRIP_REQUEST, "By " + messages.getCreatedByName());
 
-
+        viewHolder.getLikeButton().setOnClickListener(view -> likeButtonOnClickListener(messages));
     }
 
 
@@ -305,15 +315,13 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             viewHolder.getLikeCountTextView().setText(Integer.toString(messages.getLikesUserId().size()));
             if (messages.checkLikeId(user.getId())) {
                 viewHolder.getLikeButton().setImageResource(R.drawable.ic_thumb_up_dark_blue);
-                viewHolder.getLikeButton().setEnabled(false);
             }
         } else
             viewHolder.getLikeCountTextView().setText(Integer.toString(0));
         Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(messages.getCreatedOn());
         viewHolder.getTimeTextView().setText(pt.format(date));
         viewHolder.getLikeButton().setOnClickListener(view -> {
-            messages.addLikes(user.getId());
-            myRef.child(messages.getMessageId()).setValue(messages);
+            likeButtonOnClickListener(messages);
         });
         viewHolder.getDeleteButton().setOnClickListener(view -> {
             deleteMessage(messages.getMessageId());
@@ -328,15 +336,13 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             viewHolder.getLikeCountTextView().setText(Integer.toString(messages.getLikesUserId().size()));
             if (messages.checkLikeId(user.getId())) {
                 viewHolder.getLikeButton().setImageResource(R.drawable.ic_thumb_up_dark_blue);
-                viewHolder.getLikeButton().setEnabled(false);
             }
         } else
             viewHolder.getLikeCountTextView().setText(Integer.toString(0));
         Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(messages.getCreatedOn());
         viewHolder.getTimeTextView().setText(pt.format(date));
         viewHolder.getLikeButton().setOnClickListener(view -> {
-            messages.addLikes(user.getId());
-            myRef.child(messages.getMessageId()).setValue(messages);
+            likeButtonOnClickListener(messages);
         });
         viewHolder.getDeleteButton().setOnClickListener(view -> {
             deleteMessage(messages.getMessageId());

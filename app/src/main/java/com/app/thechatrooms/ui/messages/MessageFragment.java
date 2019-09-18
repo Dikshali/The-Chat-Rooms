@@ -217,8 +217,6 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
 
     @Override
     public void viewPickUpOffers(String messageId) {
-
-
         FragmentManager manager = getFragmentManager();
         FragmentTransaction fragmentTransaction = manager.beginTransaction();
         ViewRideOffersFragment viewRideOffersFragment = new ViewRideOffersFragment();
