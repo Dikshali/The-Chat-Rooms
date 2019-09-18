@@ -186,6 +186,7 @@ public class ChatsFragment extends Fragment implements ChatFragmentAdapter.ChatF
         addTripRef = database.getReference("chatRooms/trips");
         for (String s: tripIds){
             messageRef.child(s).child(Parameters.MESSAGE_TYPE).setValue(Parameters.TRIP_STATUS_END);
+            messageRef.child(s).child(Parameters.MESSAGE).setValue(Parameters.TRIP_ENDED);
             addTripRef.child(s).child(Parameters.TRIP_STATUS).setValue(TripStatus.COMPLETED);
         }
  }

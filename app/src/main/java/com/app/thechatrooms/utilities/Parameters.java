@@ -16,6 +16,7 @@ public final class Parameters {
     public static final String GROUP_ID = "GroupId";
     public static final String TRIP_REQUEST = "Trip Request";
     public static final String TRIP_PROGRESS = "Trip in Progress";
+    public static final String TRIP_ENDED = "Trip has ended for the user";
     public static final String MESSAGE = "message";
 
     public static final String ADD_TRIPS = "addTrip";

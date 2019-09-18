@@ -95,6 +95,7 @@
         android:layout_marginTop="3dp"
         android:layout_toEndOf="@+id/theirTripRequest_messageTextView"
         android:background="@null"
+        android:visibility="gone"
         app:srcCompat="@drawable/round_cancel_24" />
 
     <TextView
