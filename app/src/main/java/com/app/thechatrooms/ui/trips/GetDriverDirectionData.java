@@ -1,42 +1,14 @@
 package com.app.thechatrooms.ui.trips;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.location.Location;
 import android.os.AsyncTask;
-import android.os.Looper;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-
-import com.app.thechatrooms.MapsActivity;
-import com.app.thechatrooms.models.PlaceLatitudeLongitude;
-import com.app.thechatrooms.utilities.Parameters;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.maps.android.PolyUtil;
 
 import org.json.JSONArray;
@@ -104,6 +76,7 @@ public class GetDriverDirectionData extends AsyncTask<Object, String, String > {
     @Override
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
+
         JSONObject jsonObject = null;
         try {
             jsonObject = new JSONObject(s);
@@ -139,8 +112,6 @@ public class GetDriverDirectionData extends AsyncTask<Object, String, String > {
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
             builder.include(bounds.get(0));
             builder.include(bounds.get(1));
-
-
 
             mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 200));
 
