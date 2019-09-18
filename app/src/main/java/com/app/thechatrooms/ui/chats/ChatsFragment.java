@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -46,6 +48,15 @@ public class ChatsFragment extends Fragment implements ChatFragmentAdapter.ChatF
     private String userId;
     ArrayList<String> tripIds = new ArrayList<>();
     private FirebaseDatabase database;
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //noChats.setVisibility(View.GONE);
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        ActionBar actionBar = activity.getSupportActionBar();
+        actionBar.setTitle(R.string.menu_chats);
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
