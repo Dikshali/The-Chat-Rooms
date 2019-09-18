@@ -111,6 +111,8 @@ public class Messages {
     }
 
     public boolean checkLikeId(String id) {
+        if (likesUserId==null)
+            likesUserId = new ArrayList<>();
         if (likesUserId.contains(id))
             return true;
         else
