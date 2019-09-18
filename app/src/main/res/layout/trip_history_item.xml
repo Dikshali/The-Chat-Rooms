@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
     <androidx.cardview.widget.CardView
@@ -10,21 +9,11 @@
         app:cardElevation="4dp"
         app:cardMaxElevation="6dp"
         app:contentPadding="8dp"
-        app:cardCornerRadius="4dp">
+        app:cardCornerRadius="32dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-            <ImageButton
-                android:id="@+id/tripHistory_infoImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:background="@null"
-                app:layout_constraintStart_toEndOf="@+id/tripHistory_personTextView"
-                app:layout_constraintTop_toTopOf="@+id/tripHistory_personTextView"
-                app:srcCompat="@drawable/baseline_info_24" />
 
             <TextView
                 android:id="@+id/tripHistory_dropOffTextView"
@@ -56,18 +45,6 @@
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tripHistory_openMapsTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/open_map"
-                android:textColor="@android:color/darker_gray"
-                android:textSize="18sp"
-                app:layout_constraintStart_toEndOf="@+id/tripHistory_infoImageView"
-                app:layout_constraintTop_toBottomOf="@+id/tripHistory_dropOffTextView" />
 
             <TextView
                 android:id="@+id/tripHistory_rideStatus"

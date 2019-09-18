@@ -69,15 +69,6 @@ public class RiderFragmentAdapter extends RecyclerView.Adapter<RiderFragmentAdap
         }else{
             holder.personTextView.setText("Driver: No Driver Accepted");
         }
-
-
-        holder.infoImageView.setOnClickListener(view -> {
-
-        });
-
-        holder.openMapsTextView.setOnClickListener(view -> {
-
-        });
     }
 
     @Override
@@ -98,8 +89,6 @@ public class RiderFragmentAdapter extends RecyclerView.Adapter<RiderFragmentAdap
             pickUpTextView = itemView.findViewById(R.id.tripHistory_pickUpTextView);
             dropOffTextView = itemView.findViewById(R.id.tripHistory_dropOffTextView);
             personTextView = itemView.findViewById(R.id.tripHistory_personTextView);
-            infoImageView = itemView.findViewById(R.id.tripHistory_infoImageView);
-            openMapsTextView = itemView.findViewById(R.id.tripHistory_openMapsTextView);
             rideStatus = itemView.findViewById(R.id.tripHistory_rideStatus);
         }
     }

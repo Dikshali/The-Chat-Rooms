@@ -65,14 +65,6 @@ public class DriverFragmentAdapter extends RecyclerView.Adapter<DriverFragmentAd
 
             }
         });
-
-        holder.infoImageView.setOnClickListener(view -> {
-
-        });
-
-        holder.openMapsTextView.setOnClickListener(view -> {
-
-        });
     }
 
     @Override
@@ -93,8 +85,6 @@ public class DriverFragmentAdapter extends RecyclerView.Adapter<DriverFragmentAd
             pickUpTextView = itemView.findViewById(R.id.tripHistory_pickUpTextView);
             dropOffTextView = itemView.findViewById(R.id.tripHistory_dropOffTextView);
             personTextView = itemView.findViewById(R.id.tripHistory_personTextView);
-            infoImageView = itemView.findViewById(R.id.tripHistory_infoImageView);
-            openMapsTextView = itemView.findViewById(R.id.tripHistory_openMapsTextView);
             rideStatus = itemView.findViewById(R.id.tripHistory_rideStatus);
         }
     }
