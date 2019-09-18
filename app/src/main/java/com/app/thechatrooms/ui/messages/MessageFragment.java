@@ -46,6 +46,7 @@ import com.app.thechatrooms.ui.trips.RequestTripFragment;
 import com.app.thechatrooms.ui.trips.TripLiveLocationFragment;
 import com.app.thechatrooms.ui.trips.ViewRideOffersFragment;
 import com.app.thechatrooms.utilities.Parameters;
+import com.google.android.gms.dynamic.IFragmentWrapper;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -81,9 +82,11 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
     private FirebaseDatabase firebaseDatabase;
     LatLng latlng;
     LocationListener locationListener;
+    private Boolean aBoolean = false;
     private FirebaseAuth mAuth;
     Location location;
     private String groupId;
+    private MenuItem requestTripMenuItem;
 
     ArrayList<String> tripIds = new ArrayList<>();
 
@@ -120,12 +123,15 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 messagesArrayList.clear();
                 tripIds.clear();
+                aBoolean = false;
                 for (DataSnapshot val : dataSnapshot.getChildren()) {
 
                     Messages messages = val.getValue(Messages.class);
                     messagesArrayList.add(messages);
                     if (messages.getCreatedBy().equals(user.getId()) && !messages.getMessageType().equals(Parameters.MESSAGE_TYPE_NORMAL)){
                         tripIds.add(messages.getMessageId());
+                        if (!messages.getMessageType().equals(Parameters.MESSAGE_TYPE_RIDE_END))
+                            aBoolean = true;
                     }
                     RecyclerView recyclerView = view.findViewById(R.id.fragment_chats_recyclerView);
                     recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -183,13 +189,17 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
                 fragment.show(manager,"show_members");
                 return true;
             case R.id.action_requestTrip:
-                RequestTripFragment requestTripFragment = new RequestTripFragment();
-                Bundle requestRideBundle = new Bundle();
-                requestRideBundle.putSerializable(Parameters.USER_ID, user);
-                requestRideBundle.putString(Parameters.GROUP_ID, groupId);
-                requestTripFragment.setArguments(requestRideBundle);
-                fragmentTransaction.replace(R.id.nav_host_fragment,requestTripFragment).addToBackStack(null);
-                fragmentTransaction.commit();
+                if (!aBoolean){
+
+                    RequestTripFragment requestTripFragment = new RequestTripFragment();
+                    Bundle requestRideBundle = new Bundle();
+                    requestRideBundle.putSerializable(Parameters.USER_ID, user);
+                    requestRideBundle.putString(Parameters.GROUP_ID, groupId);
+                    requestTripFragment.setArguments(requestRideBundle);
+                    fragmentTransaction.replace(R.id.nav_host_fragment,requestTripFragment).addToBackStack(null);
+                    fragmentTransaction.commit();
+                } else
+                    Toast.makeText(getContext(),"TRIP NOT COMPLETED", Toast.LENGTH_LONG).show();
             default:
                 return super.onOptionsItemSelected(item);
         }
