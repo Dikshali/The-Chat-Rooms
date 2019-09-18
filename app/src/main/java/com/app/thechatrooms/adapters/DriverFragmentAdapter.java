@@ -1,0 +1,101 @@
+package com.app.thechatrooms.adapters;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.app.thechatrooms.R;
+import com.app.thechatrooms.models.Trips;
+import com.app.thechatrooms.models.User;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+
+public class DriverFragmentAdapter extends RecyclerView.Adapter<DriverFragmentAdapter.ViewHolder> {
+
+    Context context;
+    User user;
+    ArrayList<Trips> tripsArrayList;
+    FirebaseDatabase dbRef;
+    private DatabaseReference myRef;
+
+    public DriverFragmentAdapter(Context context, User user, ArrayList<Trips> tripsArrayList) {
+        this.context = context;
+        this.user = user;
+        this.tripsArrayList = tripsArrayList;
+    }
+
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.trip_history_item, parent, false);
+        DriverFragmentAdapter.ViewHolder viewHolder = new DriverFragmentAdapter.ViewHolder(view);
+        dbRef = FirebaseDatabase.getInstance();
+        return viewHolder;
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull DriverFragmentAdapter.ViewHolder holder, int position) {
+        final Trips trip = tripsArrayList.get(position);
+        holder.pickUpTextView.setText("Pickup: "+trip.getStartPoint().getName());
+        holder.dropOffTextView.setText("Drop off: "+trip.getEndPoint().getName());
+        holder.rideStatus.setText("Ride Status: "+trip.getTripStatus());
+        String riderId = trip.getRiderId();
+        myRef = dbRef.getReference("chatRooms/userProfiles/"+riderId);
+        final User[] rider = new User[1];
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                rider[0] = dataSnapshot.getValue(User.class);
+                holder.personTextView.setText("Rider: "+ rider[0].getFirstName()+" "+ rider[0].getLastName());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        holder.infoImageView.setOnClickListener(view -> {
+
+        });
+
+        holder.openMapsTextView.setOnClickListener(view -> {
+
+        });
+    }
+
+    @Override
+    public int getItemCount() {
+        return tripsArrayList.size();
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        TextView pickUpTextView;
+        TextView dropOffTextView;
+        TextView personTextView;
+        ImageButton infoImageView;
+        TextView openMapsTextView;
+        TextView rideStatus;
+
+        ViewHolder(View itemView) {
+            super(itemView);
+            pickUpTextView = itemView.findViewById(R.id.tripHistory_pickUpTextView);
+            dropOffTextView = itemView.findViewById(R.id.tripHistory_dropOffTextView);
+            personTextView = itemView.findViewById(R.id.tripHistory_personTextView);
+            infoImageView = itemView.findViewById(R.id.tripHistory_infoImageView);
+            openMapsTextView = itemView.findViewById(R.id.tripHistory_openMapsTextView);
+            rideStatus = itemView.findViewById(R.id.tripHistory_rideStatus);
+        }
+    }
+}

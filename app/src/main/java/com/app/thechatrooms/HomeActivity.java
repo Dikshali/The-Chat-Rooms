@@ -34,6 +34,7 @@ import com.app.thechatrooms.models.User;
 import com.app.thechatrooms.ui.chats.ChatsFragment;
 import com.app.thechatrooms.ui.contacts.ContactsFragment;
 import com.app.thechatrooms.ui.groups.GroupsFragment;
+import com.app.thechatrooms.ui.myTrips.MyTripsFragment;
 import com.app.thechatrooms.ui.profile.ProfileFragment;
 import com.app.thechatrooms.utilities.CircleTransform;
 import com.app.thechatrooms.utilities.Parameters;
@@ -205,6 +206,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 fragmentTransaction.replace(R.id.nav_host_fragment, fragment,"Profile Fragment").addToBackStack(null);
                 fragmentTransaction.commit();
                 toolbar.setTitle(R.string.menu_profile);
+                break;
+            case R.id.nav_myTrips:
+                Bundle bundleMyTrips = new Bundle();
+                bundleMyTrips.putSerializable(Parameters.USER_ID, user);
+                MyTripsFragment myTripsFragment = new MyTripsFragment();
+                myTripsFragment.setArguments(bundleMyTrips);
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.nav_host_fragment, myTripsFragment, "My Trips Fragment").addToBackStack(null);
+                fragmentTransaction.commit();
+                toolbar.setTitle(R.string.menu_myTrips);
                 break;
             case R.id.nav_groups:
                 Bundle bundleGroup = new Bundle();

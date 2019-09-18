@@ -53,4 +53,9 @@
     <string name="dot">dot</string>
     <string name="box">box</string>
     <string name="menu_myTrips">My Trips</string>
+    <string name="pick_up">Pick Up:</string>
+    <string name="drop_off">Drop Off:</string>
+    <string name="open_maps">Open in Maps</string>
+    <string name="ride_status">Ride Status:</string>
+    <string name="open_map">Open Map</string>
 </resources>

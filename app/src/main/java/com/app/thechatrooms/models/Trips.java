@@ -1,5 +1,7 @@
 package com.app.thechatrooms.models;
 
+import org.xmlpull.v1.sax2.Driver;
+
 import java.util.HashMap;
 
 public class Trips {
@@ -7,6 +9,7 @@ public class Trips {
     private String riderId, driverId;
     private PlaceLatitudeLongitude startPoint, endPoint;
     private HashMap<String, Drivers> drivers = new HashMap<>();
+    private Drivers driverAccepted;
 
     public Trips(){
 
@@ -65,5 +68,13 @@ public class Trips {
 
     public void setDrivers(HashMap<String, Drivers> drivers) {
         this.drivers = drivers;
+    }
+
+    public Drivers getDriverAccepted() {
+        return driverAccepted;
+    }
+
+    public void setDriverAccepted(Drivers driverAccepted) {
+        this.driverAccepted = driverAccepted;
     }
 }
