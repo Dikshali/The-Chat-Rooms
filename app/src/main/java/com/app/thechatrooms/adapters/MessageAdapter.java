@@ -240,7 +240,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (messages.getNotification())
-                        messageInterface.showNotification(messages, Parameters.TRIP_PROGRESS, "Accepted Driver" + (String) dataSnapshot.child(Parameters.DRIVER_ACCEPTED).child("driverName").getValue());
+                        messageInterface.showNotification(messages, Parameters.TRIP_PROGRESS, "Accepted Driver: " + (String) dataSnapshot.child(Parameters.DRIVER_ACCEPTED).child("driverName").getValue());
 
                 }
                 @Override
@@ -292,7 +292,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(messages.getCreatedOn());
         viewHolder.getTheirTripRequestTime().setText(pt.format(date));
         if (messages.getNotification())
-            messageInterface.showNotification(messages, Parameters.TRIP_REQUEST, "By" + messages.getCreatedByName());
+            messageInterface.showNotification(messages, Parameters.TRIP_REQUEST, "By " + messages.getCreatedByName());
 
 
     }
@@ -342,7 +342,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             deleteMessage(messages.getMessageId());
         });
         if (messages.getNotification())
-            messageInterface.showNotification(messages, Parameters.TRIP_STATUS_END, "By" + messages.getCreatedByName());
+            messageInterface.showNotification(messages, Parameters.TRIP_STATUS_END, "By " + messages.getCreatedByName());
     }
 
     private void deleteTrip(String messageId) {
