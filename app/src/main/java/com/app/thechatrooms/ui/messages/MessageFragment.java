@@ -119,9 +119,14 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 messagesArrayList.clear();
+                tripIds.clear();
                 for (DataSnapshot val : dataSnapshot.getChildren()) {
+
                     Messages messages = val.getValue(Messages.class);
                     messagesArrayList.add(messages);
+                    if (messages.getCreatedBy().equals(user.getId()) && !messages.getMessageType().equals(Parameters.MESSAGE_TYPE_NORMAL)){
+                        tripIds.add(messages.getMessageId());
+                    }
                     RecyclerView recyclerView = view.findViewById(R.id.fragment_chats_recyclerView);
                     recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                     messageAdapter = new MessageAdapter(user, groupId, messagesArrayList, getActivity(), getContext(), MessageFragment.this);
@@ -148,23 +153,6 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
             }
         });
 
-        addTripRef = firebaseDatabase.getReference("chatRooms/addTrip/riders/"+user.getId());
-
-        addTripRef.addValueEventListener(new ValueEventListener() {
-
-
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot child: dataSnapshot.getChildren()){
-                    tripIds.add((String) child.getValue());
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
         return view;
     }
 
@@ -349,16 +337,17 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
     public void onDestroy() {
         super.onDestroy();
         Toast.makeText(getContext(), "DESTROY", Toast.LENGTH_LONG).show();
-        tripRef = firebaseDatabase.getReference("chatRooms/trips/" );
-        myRef = firebaseDatabase.getReference("chatRooms/messages/" + groupId);
-        for (String s: tripIds){
-//                    tripRef.child(s).child(Parameters.TRIP_STATUS).setValue(Parameters.TRIP_STATUS_END);
-            if (myRef.child(s) != null){
-                myRef.child(s).child(Parameters.MESSAGE_TYPE).setValue(Parameters.TRIP_STATUS_END);
-                myRef.child(s).child(Parameters.MESSAGE).setValue(Parameters.MESSAGE_TYPE_RIDE_COMPLETE);
-                tripRef.child(s).child(Parameters.TRIP_STATUS).setValue(TripStatus.COMPLETED);
-            }
-        }
+//        tripRef = firebaseDatabase.getReference("chatRooms/trips/" );
+//        myRef = firebaseDatabase.getReference("chatRooms/messages/" + groupId);
+//        for (String s: tripIds){
+////                    tripRef.child(s).child(Parameters.TRIP_STATUS).setValue(Parameters.TRIP_STATUS_END);
+////            Log.d("HHH", myRef.has);
+//            if (myRef.child(s) != null){
+//                myRef.child(s).child(Parameters.MESSAGE_TYPE).setValue(Parameters.TRIP_STATUS_END);
+//                myRef.child(s).child(Parameters.MESSAGE).setValue(Parameters.MESSAGE_TYPE_RIDE_COMPLETE);
+//                tripRef.child(s).child(Parameters.TRIP_STATUS).setValue(TripStatus.COMPLETED);
+//            }
+//        }
     }
 
 //    @Override
