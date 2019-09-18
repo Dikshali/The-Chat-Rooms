@@ -7,6 +7,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -25,6 +26,7 @@ import com.app.thechatrooms.R;
 import com.app.thechatrooms.adapters.OffersAdapter;
 import com.app.thechatrooms.models.Drivers;
 import com.app.thechatrooms.models.Messages;
+import com.app.thechatrooms.models.OfferDrivers;
 import com.app.thechatrooms.models.PlaceLatitudeLongitude;
 import com.app.thechatrooms.models.TripStatus;
 import com.app.thechatrooms.models.User;
@@ -51,7 +53,7 @@ public class ViewRideOffersFragment extends Fragment implements OffersAdapter.Of
     PlaceLatitudeLongitude riderLocation;
     private GoogleMap mMap;
     private FirebaseDatabase firebaseDatabase;
-    private ArrayList<Drivers> driversArrayList =new ArrayList<>();
+    private ArrayList<OfferDrivers> driversArrayList =new ArrayList<>();
     private RecyclerView recyclerView;
     private Boolean isUserDriver = false;
     private OffersAdapter offersAdapter;
@@ -70,7 +72,7 @@ public class ViewRideOffersFragment extends Fragment implements OffersAdapter.Of
         messageId = getArguments().getString(Parameters.MESSAGE_ID);
         user = (User) getArguments().getSerializable(Parameters.USER_ID);
         firebaseDatabase = FirebaseDatabase.getInstance();
-        myRef = firebaseDatabase.getReference("chatRooms/trips/" + messageId);
+        myRef = firebaseDatabase.getReference("chatRooms/");
         recyclerView = view.findViewById(R.id.fragment_view_ride_offers_recyclerView);
 
 //        offersAdapter = new OffersAdapter(getContext(), drive)
@@ -78,13 +80,21 @@ public class ViewRideOffersFragment extends Fragment implements OffersAdapter.Of
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child(Parameters.DRIVERS).exists()){
+                if (dataSnapshot.child("trips").child(messageId).child(Parameters.DRIVERS).exists()){
                     driversArrayList.clear();
-                    isUserDriver = false;
-                    for (DataSnapshot val: dataSnapshot.child(Parameters.DRIVERS).getChildren()){
 
+                    isUserDriver = false;
+                    for (DataSnapshot val: dataSnapshot.child("trips").child(messageId).child(Parameters.DRIVERS).getChildren()){
+
+//                        dataSnapshot.child("userProfile").child()
                         Drivers drivers = val.getValue(Drivers.class);
-                        driversArrayList.add(drivers);
+                        String img = (String) dataSnapshot.child("userProfiles/").child(drivers.getDriverId()).child("userProfileImageUrl").getValue();
+                        Location startPoint = new Location("startPoint");
+                        startPoint.setLatitude((Double) dataSnapshot.child("trips").child(messageId).child(Parameters.START_POINT).child(Parameters.LATITUDE).getValue());
+                        startPoint.setLongitude((Double) dataSnapshot.child("trips").child(messageId).child(Parameters.START_POINT).child(Parameters.LONGITUDE).getValue());
+                        OfferDrivers offerDrivers = new OfferDrivers(drivers, img, startPoint);
+
+                        driversArrayList.add(offerDrivers);
                         if (drivers.getDriverId().equals(user.getId()))
                             isUserDriver = true;
                         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

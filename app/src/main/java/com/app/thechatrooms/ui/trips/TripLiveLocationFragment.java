@@ -181,10 +181,11 @@ public class TripLiveLocationFragment extends FragmentActivity implements OnMapR
                             mCurrLocationMarker.remove();
                         }
 
-                        if (getDistance(start, new LatLng(startPoint.getLatitude(), startPoint.getLongitude())) < 30.0){
+                        if (getDistance(start, new LatLng(startPoint.getLatitude(), startPoint.getLongitude())) < 10){
                             firebaseDatabase.getReference("chatRooms/trips/" + messageId).child(Parameters.TRIP_STATUS).setValue(TripStatus.COMPLETED);
-                            firebaseDatabase.getReference("chatRooms/messages/" + groupId+"/"+messageId).child(Parameters.MESSAGE_TYPE).setValue(Parameters.TRIP_STATUS_END);
-                            firebaseDatabase.getReference("chatRooms/messages"+groupId+"/"+messageId).child(Parameters.MESSAGE).setValue(Parameters.MESSAGE_TYPE_RIDE_END);
+                            firebaseDatabase.getReference("chatRooms/messages/").child(groupId).child(messageId).child(Parameters.MESSAGE_TYPE).setValue(Parameters.TRIP_STATUS_END);
+                            firebaseDatabase.getReference("chatRooms/messages").child(groupId).child(messageId).child(Parameters.MESSAGE).setValue(Parameters.MESSAGE_TYPE_RIDE_END);
+                            firebaseDatabase.getReference("chatRooms/messages").child(groupId).child(messageId).child("notification").setValue(true);
                             finish();
                         }
 

@@ -239,10 +239,10 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             tripRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    messageInterface.showNotification(messages, Parameters.TRIP_PROGRESS, "Accepted Driver" + (String) dataSnapshot.child(Parameters.DRIVER_ACCEPTED).child("driverName").getValue());
+                    if (messages.getNotification())
+                        messageInterface.showNotification(messages, Parameters.TRIP_PROGRESS, "Accepted Driver" + (String) dataSnapshot.child(Parameters.DRIVER_ACCEPTED).child("driverName").getValue());
 
                 }
-
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -324,6 +324,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private void configureMyTripEndViewHolder(MyTripEndViewHolder viewHolder, int position) throws ParseException{
         Messages messages = messagesArrayList.get(position);
         viewHolder.getMessageTextView().setText(messages.getMessage());
+
         if (messages.getLikesUserId() != null) {
             viewHolder.getLikeCountTextView().setText(Integer.toString(messages.getLikesUserId().size()));
             if (messages.checkLikeId(user.getId())) {
@@ -341,6 +342,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         viewHolder.getDeleteButton().setOnClickListener(view -> {
             deleteMessage(messages.getMessageId());
         });
+        if (messages.getNotification())
+            messageInterface.showNotification(messages, Parameters.TRIP_STATUS_END, "By" + messages.getCreatedByName());
     }
 
     private void deleteTrip(String messageId) {
