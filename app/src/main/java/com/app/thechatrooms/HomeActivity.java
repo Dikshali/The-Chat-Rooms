@@ -193,7 +193,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 toolbar.setTitle(R.string.menu_chats);
                 break;
             case R.id.nav_contacts:
-                getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, new ContactsFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, new ContactsFragment(),"Contacts Fragment").addToBackStack(null).commit();
                 toolbar.setTitle(R.string.menu_contacts);
                 break;
             case R.id.nav_profile:

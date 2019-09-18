@@ -79,7 +79,7 @@ public class ContactsFragment extends Fragment {
                 fragment.setArguments(bundle);
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.nav_host_fragment, fragment);
+                fragmentTransaction.replace(R.id.nav_host_fragment, fragment, "Profile Fragment").addToBackStack(null);
                 callback.updateProfileToolbar(Parameters.PROFILE);
                 fragmentTransaction.commit();
             }
