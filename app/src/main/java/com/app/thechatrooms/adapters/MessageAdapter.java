@@ -228,6 +228,12 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         viewHolder.getTheirTripProgressMessage().setText(messages.getMessage());
         Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(messages.getCreatedOn());
         viewHolder.getTheirTripProgressTime().setText(pt.format(date));
+        viewHolder.getInfoButton().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                messageInterface.viewDriversProgress(messages.getMessageId());
+            }
+        });
     }
 
     private void configureTheirTripRequestViewHolder(TheirTripRequestViewHolder viewHolder, int position) throws ParseException {

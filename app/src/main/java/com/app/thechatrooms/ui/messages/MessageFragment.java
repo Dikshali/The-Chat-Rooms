@@ -393,6 +393,7 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
                 Log.d("Drivers", dataSnapshot.child(Parameters.DRIVER_ACCEPTED).toString());
                 intent.putExtra(Parameters.DRIVER_ACCEPTED ,drivers);
                 intent.putExtra(Parameters.START_POINT, startPoint);
+                intent.putExtra(Parameters.MESSAGE_ID, messageId);
                 startActivityForResult(intent, LIVELOCATION);
             }
 

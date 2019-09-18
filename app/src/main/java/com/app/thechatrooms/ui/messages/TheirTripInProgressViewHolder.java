@@ -70,6 +70,7 @@ public class TheirTripInProgressViewHolder extends RecyclerView.ViewHolder {
         theirTripProgressTime = itemView.findViewById(R.id.theirTripProgress_timeTextView);
         likeButton = itemView.findViewById(R.id.theirTripProgress_likeImageButton);
         senderName = itemView.findViewById(R.id.theirTripProgress_senderNameTextView);
+        infoButton = itemView.findViewById(R.id.theirTripProgress_info);
 
     }
 }
