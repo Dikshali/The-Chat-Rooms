@@ -127,6 +127,7 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
                     messageAdapter = new MessageAdapter(user, groupId, messagesArrayList, getActivity(), getContext(), MessageFragment.this);
                     recyclerView.setAdapter(messageAdapter);
                     messageAdapter.notifyDataSetChanged();
+                    recyclerView.smoothScrollToPosition(messagesArrayList.size()-1);
                 }
             }
 
