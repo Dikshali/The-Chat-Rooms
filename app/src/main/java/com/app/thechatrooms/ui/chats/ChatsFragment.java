@@ -114,10 +114,31 @@ public class ChatsFragment extends Fragment implements ChatFragmentAdapter.ChatF
     @Override
     public void deleteGroup(GroupChatRoom groupChatRoom) {
         groupRef = database.getReference("chatRooms/groupChatRoom/" + groupChatRoom.getGroupId());
+
         groupRef.setValue(null);
 
         messageRef = database.getReference("chatRooms/messages/"+ groupChatRoom.getGroupId());
-        messageRef.setValue(null);
+        messageRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                tripIds.clear();
+                for (DataSnapshot child: dataSnapshot.getChildren()){
+                    Messages messages = child.getValue(Messages.class);
+                    if (messages.getCreatedBy().equals(user.getId()) && !messages.getMessageType().equals(Parameters.MESSAGE_TYPE_NORMAL)){
+                        tripIds.add(child.getKey());
+                    }
+//
+                }
+
+                completeTrips(tripIds, groupChatRoom.getGroupId());
+                messageRef.setValue(null);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         chatFragmentAdapter.notifyDataSetChanged();
     }

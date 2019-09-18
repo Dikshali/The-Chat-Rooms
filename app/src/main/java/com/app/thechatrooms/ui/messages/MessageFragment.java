@@ -190,7 +190,6 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
                 return true;
             case R.id.action_requestTrip:
                 if (!aBoolean){
-
                     RequestTripFragment requestTripFragment = new RequestTripFragment();
                     Bundle requestRideBundle = new Bundle();
                     requestRideBundle.putSerializable(Parameters.USER_ID, user);
