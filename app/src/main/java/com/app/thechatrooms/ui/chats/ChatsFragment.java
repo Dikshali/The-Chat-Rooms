@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.app.thechatrooms.R;
 import com.app.thechatrooms.adapters.ChatFragmentAdapter;
 import com.app.thechatrooms.models.GroupChatRoom;
+import com.app.thechatrooms.models.Messages;
+import com.app.thechatrooms.models.TripStatus;
 import com.app.thechatrooms.models.User;
 import com.app.thechatrooms.ui.messages.MessageFragment;
 import com.app.thechatrooms.utilities.Parameters;
@@ -38,10 +40,11 @@ public class ChatsFragment extends Fragment implements ChatFragmentAdapter.ChatF
     private User user;
     private ChatFragmentAdapter chatFragmentAdapter;
     private StorageReference mStorageRef;
-    private DatabaseReference myRef, groupRef, messageRef;
+    private DatabaseReference myRef, groupRef, messageRef, addTripRef;
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth mAuth;
     private String userId;
+    ArrayList<String> tripIds = new ArrayList<>();
     private FirebaseDatabase database;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -90,6 +93,7 @@ public class ChatsFragment extends Fragment implements ChatFragmentAdapter.ChatF
                         }
                     }
                 }
+
                 RecyclerView recyclerView = view.findViewById(R.id.fragment_chats_recycler_view);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -121,8 +125,38 @@ public class ChatsFragment extends Fragment implements ChatFragmentAdapter.ChatF
     @Override
     public void leaveGroup(GroupChatRoom groupChatRoom) {
         myRef.child(groupChatRoom.getGroupId()).child("membersListWithOnlineStatus").child(userId).setValue(null);
+        messageRef = database.getReference("chatRooms/messages/"+ groupChatRoom.getGroupId());
+        messageRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                tripIds.clear();
+                for (DataSnapshot child: dataSnapshot.getChildren()){
+                    Messages messages = child.getValue(Messages.class);
+                    if (messages.getCreatedBy().equals(user.getId()) && !messages.getMessageType().equals(Parameters.MESSAGE_TYPE_NORMAL)){
+                        tripIds.add(child.getKey());
+                    }
+//
+                }
+
+                completeTrips(tripIds, groupChatRoom.getGroupId());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         chatFragmentAdapter.notifyDataSetChanged();
     }
+
+    private void completeTrips(ArrayList<String> tripIds, String groupId){
+        messageRef = database.getReference("chatRooms/messages/"+ groupId);
+        addTripRef = database.getReference("chatRooms/trips");
+        for (String s: tripIds){
+            messageRef.child(s).child(Parameters.MESSAGE_TYPE).setValue(Parameters.TRIP_STATUS_END);
+            addTripRef.child(s).child(Parameters.TRIP_STATUS).setValue(TripStatus.COMPLETED);
+        }
+ }
 
     @Override
     public void openMessageWindow(MessageFragment messageFragment) {
