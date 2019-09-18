@@ -94,6 +94,8 @@ public class ViewRideOffersFragment extends Fragment implements OffersAdapter.Of
         messageRef = firebaseDatabase.getReference("chatRooms/messages/"+groupId);
         messageRef.child(messageId).child(Parameters.MESSAGE_TYPE).setValue(Parameters.MESSAGE_TYPE_RIDE_IN_PROGRESS);
         messageRef.child(messageId).child(Parameters.MESSAGE).setValue(Parameters.TRIP_PROGRESS);
+        messageRef.child(messageId).child("notification").setValue(true);
+
         tripRef = firebaseDatabase.getReference("chatRooms/trips/"+messageId);
         tripRef.child(Parameters.TRIP_STATUS).setValue(TripStatus.IN_PROGESS);
 

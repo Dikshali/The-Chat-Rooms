@@ -10,8 +10,17 @@ public class Messages {
     private String createdByName;
     private String createdOn;
     private String messageType;
+    Boolean notification;
 
-    public Messages(String messageId, String message, String createdBy, String createdByName, String createdOn, String messageType) {
+    public Boolean getNotification() {
+        return notification;
+    }
+
+    public void setNotification(Boolean notification) {
+        this.notification = notification;
+    }
+
+    public Messages(String messageId, String message, String createdBy, String createdByName, String createdOn, String messageType, Boolean notification) {
         this.messageId = messageId;
         this.message = message;
         this.likesUserId = new ArrayList<>();
@@ -19,6 +28,7 @@ public class Messages {
         this.createdByName = createdByName;
         this.createdOn = createdOn;
         this.messageType = messageType;
+        this.notification = notification;
     }
 
     public Messages() {

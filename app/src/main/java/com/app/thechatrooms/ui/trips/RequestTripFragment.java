@@ -113,7 +113,7 @@ public class RequestTripFragment extends Fragment {
                 String messageId = myRef.push().getKey();
                 String createdOn = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(new Date());
                 Messages messages = new Messages(messageId, Parameters.TRIP_REQUEST, user.getId(),
-                        user.getFirstName() + " " + user.getLastName(), createdOn, Parameters.MESSAGE_TYPE_RIDE_REQUEST);
+                        user.getFirstName() + " " + user.getLastName(), createdOn, Parameters.MESSAGE_TYPE_RIDE_REQUEST, true);
                 myRef.child(messageId).setValue(messages);
                 tripRef = firebaseDatabase.getReference("chatRooms/trips/" + messageId);
                 addTrip = firebaseDatabase.getReference("chatRooms");

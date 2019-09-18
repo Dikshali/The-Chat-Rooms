@@ -275,6 +275,10 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(messages.getCreatedOn());
         viewHolder.getTheirTripRequestTime().setText(pt.format(date));
+        if (messages.getNotification())
+            messageInterface.showNotification(messages.getMessageId());
+
+
     }
 
 
@@ -348,6 +352,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         void theirTripRequestInfo(String messageId);
 
         void openMap(PlaceLatitudeLongitude startPoint, PlaceLatitudeLongitude endPoint);
+
+        void showNotification(String messageId);
     }
 
 }
