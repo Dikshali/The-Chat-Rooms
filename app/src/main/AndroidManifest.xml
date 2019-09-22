@@ -30,7 +30,8 @@
         <activity android:name=".SignUpActivity" />
         <activity android:name=".ui.trips.PickUpOffersFragment"></activity>
         <activity android:name=".ui.trips.RequestTripFragment"></activity>
-        <activity android:name=".ui.trips.TripLiveLocationFragment"></activity>
+        <activity android:name=".ui.trips.DriverLiveLocationFragment"></activity>
+        <activity android:name=".ui.trips.RiderLiveLocationFragment"></activity>
         <activity
             android:name=".HomeActivity"
             android:label="@string/title_activity_home"

@@ -6,11 +6,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -34,21 +36,24 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-public class TripLiveLocationFragment extends FragmentActivity implements OnMapReadyCallback{
+public class DriverLiveLocationFragment extends FragmentActivity implements OnMapReadyCallback{
 
     private GoogleMap mMap;
-    Drivers drivers;
-    private String messageId, driverId, id, groupId;
-    PlaceLatitudeLongitude startPoint;
+    private Drivers drivers;
+    private String messageId, loggedInId;
+    private PlaceLatitudeLongitude startPoint;
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationRequest locationRequest;
     private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-    private LatLng start;
-    SupportMapFragment mapFragment;
-    private MarkerOptions markerRider = new MarkerOptions(), markerDriver = new MarkerOptions();
-
+    private LatLng driverLocation, pickUpLocation;
+    private SupportMapFragment mapFragment;
+    private Marker mCurrLocationMarker;
 
     @Override
     protected void onDestroy() {
@@ -91,22 +96,44 @@ public class TripLiveLocationFragment extends FragmentActivity implements OnMapR
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_trip_live_location);
+        loggedInId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
         Intent intent = getIntent();
-        drivers = (Drivers) intent.getSerializableExtra(Parameters.DRIVER_ACCEPTED);
-        startPoint = (PlaceLatitudeLongitude) intent.getSerializableExtra(Parameters.START_POINT);
         messageId = intent.getStringExtra(Parameters.MESSAGE_ID);
-        driverId = drivers.getDriverId();
-        groupId = intent.getStringExtra(Parameters.GROUP_ID);
-        id = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        //groupId = intent.getStringExtra(Parameters.GROUP_ID);
         locationRequest = LocationRequest.create();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_trip_live_location_map);
-        mapFragment.getMapAsync(TripLiveLocationFragment.this::onMapReady);
+        DatabaseReference tripRef = firebaseDatabase.getReference("chatRooms/trips/" + messageId );
+        tripRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                drivers = dataSnapshot.child(Parameters.DRIVER_ACCEPTED).getValue(Drivers.class);
+                /*if(!drivers.getDriverId().equals(loggedInId)){
+                    Intent intent;
+                    intent = new Intent(getApplicationContext(), RiderLiveLocationFragment.class);
+                    intent.putExtra(Parameters.MESSAGE_ID, messageId);
+                    //intent.putExtra(Parameters.GROUP_ID, groupId);
+                    startActivity(intent);
+                }*/
+                startPoint = dataSnapshot.child(Parameters.START_POINT).getValue(PlaceLatitudeLongitude.class);
+                driverLocation = new LatLng(drivers.getDriverLocation().getLatitude(), drivers.getDriverLocation().getLongitude());
+                pickUpLocation = new LatLng(startPoint.getLatitude(), startPoint.getLongitude());
+                mapFragment.getMapAsync(DriverLiveLocationFragment.this::onMapReady);
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        if(mMap!=null) {
+            mMap.clear();
+        }
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         locationRequest = LocationRequest.create();
@@ -114,30 +141,28 @@ public class TripLiveLocationFragment extends FragmentActivity implements OnMapR
         locationRequest.setFastestInterval(5000);
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
-        double destinationLat = startPoint.getLatitude(), destinationLong = startPoint.getLongitude();
-        double startLat=drivers.getDriverLocation().getLatitude(), startLong=drivers.getDriverLocation().getLongitude();
+
         StringBuilder sb = new StringBuilder();
         sb.append("https://maps.googleapis.com/maps/api/directions/json?");
-        sb.append("origin="+startLat+","+ startLong);
-        sb.append("&destination="+destinationLat+","+ destinationLong);
+        sb.append("origin="+driverLocation.latitude+","+ driverLocation.longitude);
+        sb.append("&destination="+pickUpLocation.latitude+","+ pickUpLocation.longitude);
         sb.append("&key="+getResources().getString(R.string.google_api_key));
         GetDriverDirectionData getDirectionData = new GetDriverDirectionData(getApplicationContext());
         Object[] data = new Object[4];
         data[0] = mMap;
         data[1] = sb.toString();
-        data[2] = new LatLng(startLat, startLong);//start
-        data[3] = new LatLng(destinationLat, destinationLong);//end
+        data[2] = driverLocation;//start
+        data[3] = pickUpLocation;//end
         //data[4] = messageId;
-        mMap.addMarker(new MarkerOptions().position((LatLng) data[3])).setTitle("Rider");
+        mMap.addMarker(new MarkerOptions().position(pickUpLocation)).setTitle("Rider");
         MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position((LatLng) data[2]);
+        markerOptions.position(driverLocation);
         markerOptions.title("You are here");
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
         mCurrLocationMarker = mMap.addMarker(markerOptions);
-        //mMap.addMarker(markerDriver.position((LatLng) data[2]).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))).setTitle("You are here");
         getDirectionData.execute(data);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
@@ -155,7 +180,7 @@ public class TripLiveLocationFragment extends FragmentActivity implements OnMapR
         }
 
     }
-    Marker mCurrLocationMarker;
+
     private LocationCallback mLocationCallBack = new LocationCallback(){
         @Override
         public void onLocationResult(LocationResult locationResult) {
@@ -164,47 +189,13 @@ public class TripLiveLocationFragment extends FragmentActivity implements OnMapR
             }
             for (Location location : locationResult.getLocations()) {
                 if (location != null) {
-                    start = new LatLng(location.getLatitude(), location.getLongitude());
-                    if(driverId.equals(id)) {
-                        mMap.clear();
-                        if (mCurrLocationMarker != null) {
-                            mCurrLocationMarker.remove();
-                        }
-
-                        if (getDistance(start, new LatLng(startPoint.getLatitude(), startPoint.getLongitude())) < 10){
-                            firebaseDatabase.getReference("chatRooms/trips/" + messageId).child(Parameters.TRIP_STATUS).setValue(TripStatus.COMPLETED);
-                            firebaseDatabase.getReference("chatRooms/messages/").child(groupId).child(messageId).child(Parameters.MESSAGE_TYPE).setValue(Parameters.TRIP_STATUS_END);
-                            firebaseDatabase.getReference("chatRooms/messages").child(groupId).child(messageId).child(Parameters.MESSAGE).setValue(Parameters.TRIP_ENDED);
-                            firebaseDatabase.getReference("chatRooms/messages").child(groupId).child(messageId).child("notification").setValue(true);
-                            finish();
-                        }
-
-                    }
-                    double destinationLat = startPoint.getLatitude(), destinationLong = startPoint.getLongitude();
-                    double startLat = start.latitude, startLong = start.longitude;
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("https://maps.googleapis.com/maps/api/directions/json?");
-                    sb.append("origin="+startLat+","+ startLong);
-                    sb.append("&destination="+destinationLat+","+ destinationLong);
-                    sb.append("&key="+getResources().getString(R.string.google_api_key));
-                    GetDriverDirectionData getDirectionData = new GetDriverDirectionData(getApplicationContext());
-                    Object[] data = new Object[4];
-                    data[0] = mMap;
-                    data[1] = sb.toString();
-                    data[2] = new LatLng(startLat, startLong);//start
-                    data[3] = new LatLng(destinationLat, destinationLong);//end
-                    //data[4] = messageId;
-                    if (mCurrLocationMarker != null) {
+                    //start = new LatLng(location.getLatitude(), location.getLongitude());
+                    firebaseDatabase.getReference("chatRooms/trips/" + messageId).child(Parameters.DRIVER_ACCEPTED).child("driverLocation").child(Parameters.LATITUDE).setValue(location.getLatitude());
+                    firebaseDatabase.getReference("chatRooms/trips/" + messageId).child(Parameters.DRIVER_ACCEPTED).child("driverLocation").child(Parameters.LONGITUDE).setValue(location.getLongitude());
+                    //mMap.clear();
+                    /*if (mCurrLocationMarker != null) {
                         mCurrLocationMarker.remove();
-                    }
-                    mMap.addMarker(new MarkerOptions().position((LatLng) data[3])).setTitle("Rider");
-                    MarkerOptions markerOptions = new MarkerOptions();
-                    markerOptions.position((LatLng) data[2]);
-                    markerOptions.title("You are here");
-                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                    mCurrLocationMarker = mMap.addMarker(markerOptions);
-                    //mMap.addMarker(markerDriver.position((LatLng) data[2]).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))).setTitle("You are here");
-                    getDirectionData.execute(data);
+                    }*/
                 }
             }
         }
@@ -239,7 +230,7 @@ public class TripLiveLocationFragment extends FragmentActivity implements OnMapR
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                ActivityCompat.requestPermissions(TripLiveLocationFragment.this,
+                                ActivityCompat.requestPermissions(DriverLiveLocationFragment.this,
                                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                         MY_PERMISSIONS_REQUEST_LOCATION );
                             }

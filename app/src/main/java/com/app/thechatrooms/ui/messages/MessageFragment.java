@@ -40,13 +40,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.app.thechatrooms.MapsActivity;
 import com.app.thechatrooms.R;
 import com.app.thechatrooms.adapters.MessageAdapter;
+import com.app.thechatrooms.adapters.OffersAdapter;
 import com.app.thechatrooms.models.Drivers;
 import com.app.thechatrooms.models.Messages;
 import com.app.thechatrooms.models.PlaceLatitudeLongitude;
+import com.app.thechatrooms.models.TripStatus;
 import com.app.thechatrooms.models.User;
 import com.app.thechatrooms.ui.profile.ProfileFragment;
 import com.app.thechatrooms.ui.trips.RequestTripFragment;
-import com.app.thechatrooms.ui.trips.TripLiveLocationFragment;
+import com.app.thechatrooms.ui.trips.DriverLiveLocationFragment;
+import com.app.thechatrooms.ui.trips.RiderLiveLocationFragment;
 import com.app.thechatrooms.ui.trips.ViewRideOffersFragment;
 import com.app.thechatrooms.utilities.Parameters;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -70,7 +73,7 @@ import java.util.Date;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MessageFragment extends Fragment implements MessageAdapter.MessageInterface {
+public class MessageFragment extends Fragment implements MessageAdapter.MessageInterface{
 
     private static final String TAG = "MessageFragment";
     static final int PICKUPOFFERS = 1, LIVELOCATION = 2, TRIPREQUEST=3;
@@ -95,6 +98,7 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
     private LocationCallback locationCallback;
     private String messageId="";
     private PlaceLatitudeLongitude driversCurrentLocation;
+    private ValueEventListener val;
 
     public MessageFragment() {
         // Required empty public constructor
@@ -157,7 +161,6 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
                 hideKeyboard(getContext(), view1);
             }
         });
-
         return view;
     }
 
@@ -343,30 +346,36 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
     PlaceLatitudeLongitude startPoint = null, endPoint = null;
     Drivers drivers = null;
 
+
+
     @Override
     public void viewDriversProgress(String messageId, String groupId ) {
+
         tripRef = firebaseDatabase.getReference("chatRooms/trips/" + messageId );
+        val = new ValueEventListener() {
 
-        Intent intent = new Intent(getActivity(), TripLiveLocationFragment.class);
-
-        tripRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                startPoint = dataSnapshot.child(Parameters.START_POINT).getValue(PlaceLatitudeLongitude.class);
-                drivers = dataSnapshot.child(Parameters.DRIVER_ACCEPTED).getValue(Drivers.class);
-                Log.d("Drivers", dataSnapshot.child(Parameters.DRIVER_ACCEPTED).toString());
-                intent.putExtra(Parameters.DRIVER_ACCEPTED ,drivers);
-                intent.putExtra(Parameters.START_POINT, startPoint);
-                intent.putExtra(Parameters.MESSAGE_ID, messageId);
-                intent.putExtra(Parameters.GROUP_ID, groupId);
-                startActivityForResult(intent, LIVELOCATION);
+                if(dataSnapshot.child(Parameters.DRIVER_ACCEPTED).exists()) {
+                    drivers = dataSnapshot.child(Parameters.DRIVER_ACCEPTED).getValue(Drivers.class);
+                    tripRef.removeEventListener(val);
+                    Intent intent;
+                    if(drivers.getDriverId().equals(user.getId())){
+                        intent = new Intent(getActivity(), DriverLiveLocationFragment.class);
+                    }else{
+                        intent = new Intent(getActivity(), RiderLiveLocationFragment.class);
+                    }
+                    intent.putExtra(Parameters.MESSAGE_ID, messageId);
+                    startActivity(intent);
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
+        };
+        tripRef.addValueEventListener(val);
     }
 
     @Override
