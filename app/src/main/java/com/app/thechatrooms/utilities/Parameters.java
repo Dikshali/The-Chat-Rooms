@@ -29,6 +29,7 @@ public final class Parameters {
     public static final String TRIP_STATUS = "tripStatus";
     public static final String DRIVER_ACCEPTED = "driverAccepted";
     public static final String TRIP_STATUS_REQUEST = "tripRequest";
+    public static final String TRIP_STATUS_COMPLETED = "COMPLETED";
 
     public static final String TRIP_STATUS_IN_PROGRESS = "tripInProgress";
     public static final String TRIP_STATUS_END = "tripEnd";

@@ -13,6 +13,7 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.DrawableRes;
@@ -107,6 +108,11 @@ public class RiderLiveLocationFragment extends FragmentActivity implements OnMap
                 driverLocation = new LatLng(drivers.getDriverLocation().getLatitude(), drivers.getDriverLocation().getLongitude());
                 pickUpLocation = new LatLng(startPoint.getLatitude(), startPoint.getLongitude());
                 mapFragment.getMapAsync(RiderLiveLocationFragment.this::onMapReady);
+                Log.d("tripstatus", (String) dataSnapshot.child(Parameters.TRIP_STATUS).getValue());
+                if(dataSnapshot.child(Parameters.TRIP_STATUS).getValue().equals(Parameters.TRIP_STATUS_COMPLETED)){
+                    Toast.makeText(getApplicationContext(), "Driver has Arrived", Toast.LENGTH_LONG).show();
+                    finish();
+                }
             }
 
             @Override

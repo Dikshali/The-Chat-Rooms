@@ -14,6 +14,7 @@ import android.location.LocationListener;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.DrawableRes;
@@ -52,7 +53,7 @@ public class DriverLiveLocationFragment extends FragmentActivity implements OnMa
 
     private GoogleMap mMap;
     private Drivers drivers;
-    private String messageId, loggedInId;
+    private String messageId, loggedInId, groupId;
     private PlaceLatitudeLongitude startPoint;
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationRequest locationRequest;
@@ -106,7 +107,7 @@ public class DriverLiveLocationFragment extends FragmentActivity implements OnMa
 
         Intent intent = getIntent();
         messageId = intent.getStringExtra(Parameters.MESSAGE_ID);
-        //groupId = intent.getStringExtra(Parameters.GROUP_ID);
+        groupId = intent.getStringExtra(Parameters.GROUP_ID);
         locationRequest = LocationRequest.create();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_trip_live_location_map);
@@ -202,6 +203,18 @@ public class DriverLiveLocationFragment extends FragmentActivity implements OnMa
                     /*if (mCurrLocationMarker != null) {
                         mCurrLocationMarker.remove();
                     }*/
+                    if(startPoint!=null)
+                        if(getDistance(new LatLng(startPoint.getLatitude(), startPoint.getLongitude()), new LatLng(location.getLatitude(), location.getLongitude())) < 0.05){
+                            Toast.makeText(getApplicationContext(), "You have arrived", Toast.LENGTH_LONG).show();
+                            firebaseDatabase.getReference("chatRooms/trips/" + messageId).child(Parameters.TRIP_STATUS).setValue(TripStatus.COMPLETED);
+                            firebaseDatabase.getReference("chatRooms/messages/").child(groupId).child(messageId).child(Parameters.MESSAGE_TYPE).setValue(Parameters.TRIP_STATUS_END);
+                            firebaseDatabase.getReference("chatRooms/messages").child(groupId).child(messageId).child(Parameters.MESSAGE).setValue(Parameters.TRIP_ENDED);
+                            firebaseDatabase.getReference("chatRooms/messages").child(groupId).child(messageId).child("notification").setValue(true);
+                            finish();
+
+                        }
+
+
                 }
             }
         }

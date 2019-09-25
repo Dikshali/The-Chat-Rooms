@@ -366,6 +366,7 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
                         intent = new Intent(getActivity(), RiderLiveLocationFragment.class);
                     }
                     intent.putExtra(Parameters.MESSAGE_ID, messageId);
+                    intent.putExtra(Parameters.GROUP_ID, groupId);
                     startActivity(intent);
                 }
             }
