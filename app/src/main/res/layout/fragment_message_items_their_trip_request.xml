@@ -29,6 +29,7 @@
         android:layout_alignStart="@+id/theirTripRequest_senderNameTextView"
         android:background="@drawable/message_theirtriprequest_bubble"
         android:elevation="2dp"
+        android:maxWidth="300dp"
         android:paddingHorizontal="16dp"
         android:paddingVertical="12dp"
         android:textColor="@android:color/background_light"

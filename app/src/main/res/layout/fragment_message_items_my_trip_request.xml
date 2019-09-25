@@ -83,6 +83,7 @@
         android:layout_marginTop="1dp"
         android:background="@drawable/message_mytriprequest_bubble"
         android:elevation="2dp"
+        android:maxWidth="300dp"
         android:padding="10dp"
         android:textColor="#ffffff"
         android:textSize="14sp" />

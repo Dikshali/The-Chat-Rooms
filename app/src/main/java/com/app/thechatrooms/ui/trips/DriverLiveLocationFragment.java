@@ -2,9 +2,13 @@ package com.app.thechatrooms.ui.trips;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Build;
@@ -12,6 +16,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.widget.Toast;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -31,6 +36,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -137,8 +143,8 @@ public class DriverLiveLocationFragment extends FragmentActivity implements OnMa
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         locationRequest = LocationRequest.create();
-        locationRequest.setInterval(5 * 1000);
-        locationRequest.setFastestInterval(5000);
+//        locationRequest.setInterval();
+        locationRequest.setFastestInterval(50);
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
 
@@ -158,7 +164,7 @@ public class DriverLiveLocationFragment extends FragmentActivity implements OnMa
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(driverLocation);
         markerOptions.title("You are here");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+        markerOptions.icon(bitmapDescriptorFromVector(this, R.drawable.ic_car)).rotation(0);
         mCurrLocationMarker = mMap.addMarker(markerOptions);
         getDirectionData.execute(data);
 
@@ -273,6 +279,18 @@ public class DriverLiveLocationFragment extends FragmentActivity implements OnMa
                 return;
             }
         }
+    }
+
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, @DrawableRes int vectorDrawableResourceId) {
+        Drawable background = ContextCompat.getDrawable(context, R.drawable.ic_car);
+        background.setBounds(0, 0, background.getIntrinsicWidth(), background.getIntrinsicHeight());
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorDrawableResourceId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(background.getIntrinsicWidth(), background.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        background.draw(canvas);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
 }
