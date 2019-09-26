@@ -280,55 +280,6 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case 100: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            if (location != null) {
-                                latitude = location.getLatitude();
-                                longitude = location.getLongitude();
-                                tripRef = firebaseDatabase.getReference("chatRooms/trips/" + messageId );
-                                PlaceLatitudeLongitude placeLatitueLongitude = new PlaceLatitudeLongitude(latitude, longitude);
-                                Drivers drivers = new Drivers(user.getId(), user.getFirstName(), placeLatitueLongitude);
-                                tripRef.child(Parameters.DRIVERS).child(drivers.getDriverId()).setValue(drivers);
-                            }
-                        }
-                    });
-                } else {
-                    Toast.makeText(getActivity(), "Permission denied", Toast.LENGTH_SHORT).show();
-                }
-            }
-            case 101:{
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            if (location != null) {
-                                driversCurrentLocation = new PlaceLatitudeLongitude(location.getLatitude(), location.getLongitude());
-                                Intent intent = new Intent(getActivity(), MapsActivity.class);
-                                intent.putExtra(Parameters.START_POINT, startPoint);
-                                intent.putExtra(Parameters.END_POINT, endPoint);
-                                intent.putExtra(Parameters.DRIVERS, driversCurrentLocation);
-                                startActivity(intent);
-                            }
-                        }
-                    });
-                } else {
-                    Toast.makeText(getActivity(), "Permission denied", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        }
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICKUPOFFERS){
@@ -418,50 +369,10 @@ public class MessageFragment extends Fragment implements MessageAdapter.MessageI
 
     @Override
     public void openMap(PlaceLatitudeLongitude startPoint, PlaceLatitudeLongitude endPoint) {
-
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
-        locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(20 * 1000);
-        locationRequest.setFastestInterval(20 * 1000);
-        this.startPoint = startPoint;
-        this.endPoint = endPoint;
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult == null) {
-                    return;
-                }
-                for (Location location : locationResult.getLocations()) {
-                    if (location != null) {
-                        driversCurrentLocation = new PlaceLatitudeLongitude(location.getLatitude(), location.getLongitude());
-                        Intent intent = new Intent(getActivity(), MapsActivity.class);
-                        intent.putExtra(Parameters.START_POINT, startPoint);
-                        intent.putExtra(Parameters.END_POINT, endPoint);
-                        intent.putExtra(Parameters.DRIVERS, driversCurrentLocation);
-                        startActivity(intent);
-                    }
-                }
-            }
-        };
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(),Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 101);
-        }else{
-            mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    if (location != null) {
-                        driversCurrentLocation = new PlaceLatitudeLongitude(location.getLatitude(), location.getLongitude());
-                        Intent intent = new Intent(getActivity(), MapsActivity.class);
-                        intent.putExtra(Parameters.START_POINT, startPoint);
-                        intent.putExtra(Parameters.END_POINT, endPoint);
-                        intent.putExtra(Parameters.DRIVERS, driversCurrentLocation);
-                        startActivity(intent);
-                    }
-                }
-            });
-        }
-
+        Intent intent = new Intent(getActivity(), MapsActivity.class);
+        intent.putExtra(Parameters.START_POINT, startPoint);
+        intent.putExtra(Parameters.END_POINT, endPoint);
+        startActivity(intent);
     }
 
     @Override
