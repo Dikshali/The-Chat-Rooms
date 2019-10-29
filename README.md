@@ -18,11 +18,11 @@ Application Demonstration Video: [The Chat Room Demo](https://youtu.be/C1hdzuxiK
 
 Login Screen             |Navigation Screen             |Group Chat Rooms list Screen            |Create Group Dialog             |
 :-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
-![](screenshot/Capture1.jpg)  |  ![](screenshot/Capture2.jpg) |  ![](screenshot/Capture3.jpg) |  ![](screenshot/Capture4.jpg)
+![](Screenshot/Capture1.jpg)  |  ![](Screenshot/Capture2.jpg) |  ![](Screenshot/Capture3.jpg) |  ![](Screenshot/Capture4.jpg)
 
 Chat Screen where user request a ride             |Profile Screen             |List of user with online status            |Map show Driver's location to pickup rider            |
 :-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
-![](screenshot/Capture5.jpg)  |  ![](screenshot/Capture7.jpg) |  ![](screenshot/Capture8.jpg) |  ![](screenshot/Capture9.jpg)
+![](Screenshot/Capture5.jpg)  |  ![](Screenshot/Capture7.jpg) |  ![](Screenshot/Capture8.jpg) |  ![](Screenshot/Capture9.jpg)
 
 ## Getting Started
 
