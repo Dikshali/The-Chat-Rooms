@@ -1,6 +1,6 @@
 # The-Chat-Rooms
 
-[![license](https://img.shields.io/github/license/Dikshali/The-Chat-Rooms?style=flat-square)](https://github.com/Dikshali/The-Chat-Rooms/edit/master/LICENSE)
+[![license](https://img.shields.io/github/license/Dikshali/The-Chat-Rooms?style=flat-square)](https://github.com/Dikshali/The-Chat-Rooms/blob/master/LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/Dikshali/The-Chat-Rooms?style=flat-square)](https://github.com/Dikshali/The-Chat-Rooms/issues)
 
 Its a chat application where logged in user can create a group or join any available groups. User can also request for a ride in a group.
